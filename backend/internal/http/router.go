@@ -71,10 +71,10 @@ func (s *Server) Handler() http.Handler {
 		r.Post("/auth/register", handler(s.handleRegister).ServeHTTP)
 		r.Post("/auth/login", handler(s.handleLogin).ServeHTTP)
 		r.Post("/auth/logout", handler(s.handleLogout).ServeHTTP)
+		r.Get("/auth/me", handler(s.handleMe).ServeHTTP)
 
 		r.Group(func(r chi.Router) {
 			r.Use(s.requireAuth)
-			r.Get("/auth/me", handler(s.handleMe).ServeHTTP)
 			r.Get("/me/profile", handler(s.handleGetProfile).ServeHTTP)
 			r.Put("/me/profile", handler(s.handlePutProfile).ServeHTTP)
 			r.Delete("/me/profile", handler(s.handleDeleteProfile).ServeHTTP)

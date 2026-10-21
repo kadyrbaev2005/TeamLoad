@@ -131,9 +131,11 @@ func TestLogin_RateLimited(t *testing.T) {
 	}
 }
 
-func TestMe_GuestIsUnauthorized(t *testing.T) {
+func TestMe_GuestHasNoSession(t *testing.T) {
 	e := newEnv(t)
-	e.anon().must(401, "GET", "/auth/me", nil)
+	if r := e.anon().must(200, "GET", "/auth/me", nil); r.Body["user"] != nil {
+		t.Fatalf("guest: %s", r.Raw)
+	}
 	e.anon().must(401, "GET", "/projects", nil)
 }
 
@@ -142,7 +144,9 @@ func TestLogout_EndsSession(t *testing.T) {
 	c := e.user("Aruzhan Sadykova")
 	id, _ := c.project(5)
 	c.must(204, "POST", "/auth/logout", nil)
-	c.must(401, "GET", "/auth/me", nil)
+	if c.must(200, "GET", "/auth/me", nil).Body["user"] != nil {
+		t.Fatal("session still active")
+	}
 	c.must(401, "GET", "/projects/"+id, nil)
 }
 
@@ -446,7 +450,9 @@ func TestProfile_DeleteTransfersOwnership(t *testing.T) {
 		t.Fatalf("transfer preview: %v", tr)
 	}
 	owner.must(204, "DELETE", "/me/profile", nil)
-	owner.must(401, "GET", "/auth/me", nil)
+	if owner.must(200, "GET", "/auth/me", nil).Body["user"] != nil {
+		t.Fatal("deleted user still logged in")
+	}
 	b := d.must(200, "GET", "/projects/"+id, nil)
 	if b.Body["is_owner"] != true || len(list(b.Body["members"])) != 2 {
 		t.Fatalf("after delete: %s", b.Raw)

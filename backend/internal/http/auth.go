@@ -101,7 +101,14 @@ func (s *Server) handleLogout(w http.ResponseWriter, _ *http.Request) error {
 	return nil
 }
 
+// handleMe restores the session. Guests get {"user": null} (not 401) so the
+// SPA can check the session without a console error.
 func (s *Server) handleMe(w http.ResponseWriter, r *http.Request) error {
-	writeJSON(w, http.StatusOK, map[string]any{"user": toUserJSON(userFrom(r.Context()))})
+	u, ok := s.sessionUser(r)
+	if !ok {
+		writeJSON(w, http.StatusOK, map[string]any{"user": nil})
+		return nil
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"user": toUserJSON(u)})
 	return nil
 }

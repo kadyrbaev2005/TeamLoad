@@ -41,14 +41,7 @@ export function invalidateProject(qc: QueryClient, id: string) {
 export function useMe() {
   return useQuery({
     queryKey: keys.me,
-    queryFn: async () => {
-      try {
-        return (await api<{ user: User }>("GET", "/auth/me")).user;
-      } catch (e) {
-        if ((e as { status?: number }).status === 401) return null;
-        throw e;
-      }
-    },
+    queryFn: async () => (await api<{ user: User | null }>("GET", "/auth/me")).user,
     staleTime: Infinity,
     retry: false,
   });

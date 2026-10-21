@@ -18,3 +18,10 @@ Choices not fixed by `SPEC.md` or `design.html` (decision — reason).
 - Profile save toasts "Profile saved. Your AI suggestion is marked as outdated." only when a suggestion was actually marked; otherwise "Profile saved".
 - Profile delete confirm names the new owner by first name, or says the project will be deleted when nobody else is in it.
 - `/join` without a code shows a code-input card in the join card's style; an invalid code shows the same card with the error.
+- `GET /api/auth/me` answers guests with `200 {"user": null}` instead of 401 — the SPA checks the session on every load and the brief asks for no console errors.
+- A plan page with no seats shows "Generate role plan" / "Use a standard plan" to the owner; right after a failed generation it shows the exact AI-unavailable notice with "Retry" and "Use a standard plan". Members see "No role plan yet".
+- Plan edits keep the plan's status (an approved plan stays approved); only Regenerate returns it to draft — the design shows Approve only for drafts.
+- Matching rows exist for every seat; seats nobody holds show "Unassigned" with a person select for the owner. After an AI failure the same rows are shown for manual assignment.
+- Run again is enabled only when matching is ready (approved plan, ≥3 members, all profiles); its confirm appears when any row is accepted.
+- RACI: owner renames/deletes activities with small pen / × buttons in the activity cell; delete asks for confirmation. "Start empty" next to "Draft RACI with AI" lets the owner build it by hand.
+- The mock provider keeps PM and QA separate in a 5-person team when the description has no data/AI keywords; otherwise it uses the design's PM & QA Lead + AI/Data Engineer.
