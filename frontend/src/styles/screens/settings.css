@@ -1,0 +1,4 @@
+/* members */
+.memberrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.memberrow:last-child{border-bottom:0}
+.memberrow .nm{flex:1;min-width:160px}

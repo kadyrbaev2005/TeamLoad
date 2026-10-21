@@ -1,0 +1,3 @@
+/* join */
+.joinwrap{display:grid;place-items:center;padding:48px 16px;min-height:100vh}
+.joincard{width:min(520px,100%);padding:28px;display:flex;flex-direction:column;gap:18px}

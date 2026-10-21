@@ -1,0 +1,9 @@
+.env
+node_modules/
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
+backend/bin/
+*.exe
+.DS_Store
+screenshots/

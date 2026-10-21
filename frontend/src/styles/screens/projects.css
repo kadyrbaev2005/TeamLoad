@@ -1,0 +1,7 @@
+/* projects list */
+.projcard{display:flex;flex-direction:column;gap:12px;padding:18px;text-decoration:none;color:var(--ink);cursor:pointer;text-align:left}
+.projcard:hover{border-color:var(--accent)}
+.avstack{display:flex}
+.avstack .avatar{border:2px solid var(--surface);margin-left:-8px}
+.avstack .avatar:first-child{margin-left:0}
+.newcard{border-style:dashed;display:grid;place-items:center;min-height:170px;color:var(--muted);font-weight:600;background:transparent}

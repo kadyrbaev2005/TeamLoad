@@ -1,0 +1,17 @@
+/* auth (ported from design) */
+.auth{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
+.auth-side{background:var(--ink);color:var(--bg);padding:48px clamp(16px,5vw,56px);display:flex;flex-direction:column;justify-content:space-between;gap:32px}
+.auth-side h1{font-size:clamp(30px,4vw,44px);color:var(--bg)}
+.auth-side .brand{padding:0;color:var(--bg)}
+.flowline{display:flex;flex-direction:column;gap:14px;max-width:420px}
+.flowline div{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
+.flowline .n{font-family:var(--f-mono);font-size:12px;border:1px solid color-mix(in srgb,var(--bg) 40%,transparent);border-radius:6px;display:grid;place-items:center;height:24px}
+.flowline p{color:color-mix(in srgb,var(--bg) 78%,transparent)}
+.flowline b{color:var(--bg)}
+.auth-form{display:grid;place-items:center;padding:40px 16px}
+.auth-form form{width:min(400px,100%);display:flex;flex-direction:column;gap:14px}
+.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:10px}
+.tabs button{flex:1;border:0;background:transparent;padding:7px;border-radius:7px;font-weight:600;cursor:pointer;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
+.check input{margin-top:3px;accent-color:var(--accent)}

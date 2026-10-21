@@ -1,0 +1,15 @@
+/* dashboard */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.kpi .v{font-family:var(--f-display);font-size:30px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:15px;color:var(--muted);font-weight:500;margin-left:4px}
+.chart svg{width:100%;height:auto;display:block}
+table.load{border-collapse:collapse;width:100%;min-width:640px}
+.load th,.load td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+.load th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.load td.n,.load th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.load tr:last-child td{border-bottom:0}
+.sharebar{display:flex;align-items:center;gap:8px}
+.sharebar .b{flex:1;height:6px;border-radius:3px;background:var(--surface-2);position:relative;min-width:60px}
+.sharebar .b i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--muted)}
+.sharebar .b em{position:absolute;top:-3px;width:2px;height:12px;background:var(--ink)}

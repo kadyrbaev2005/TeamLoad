@@ -1,0 +1,1007 @@
+<title>TeamLoad Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#F3F4F1; --surface:#FFFFFF; --surface-2:#ECEEEA; --ink:#18202E; --muted:#5B6474; --line:#DADDD6;
+  --accent:#2F4BD8; --accent-ink:#FFFFFF; --accent-soft:#E4E8FB;
+  --ok:#1E7F4F; --ok-soft:#DDF1E5; --warn:#9A6200; --warn-soft:#FBEBC8; --bad:#B3261E; --bad-soft:#F8DCD9;
+  --r1:#2F4BD8; --r2:#0F8B7D; --r3:#C2410C; --r4:#9333EA; --r5:#A16207; --r6:#BE185D;
+  --shadow:0 1px 2px rgba(24,32,46,.06),0 4px 16px rgba(24,32,46,.06); --av-ink:#FFFFFF;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#10141C; --surface:#171C26; --surface-2:#1F2531; --ink:#E7EAF0; --muted:#9AA3B2; --line:#2C3342;
+  --accent:#8196FF; --accent-ink:#0E1330; --accent-soft:#232B52;
+  --ok:#5CC98E; --ok-soft:#173424; --warn:#F0B24A; --warn-soft:#3A2D12; --bad:#FF8A80; --bad-soft:#3E1D1B;
+  --r1:#8196FF; --r2:#3CC7B5; --r3:#FB8A5A; --r4:#C084FC; --r5:#E3B341; --r6:#F472B6;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); --av-ink:#10141C;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#10141C; --surface:#171C26; --surface-2:#1F2531; --ink:#E7EAF0; --muted:#9AA3B2; --line:#2C3342;
+  --accent:#8196FF; --accent-ink:#0E1330; --accent-soft:#232B52;
+  --ok:#5CC98E; --ok-soft:#173424; --warn:#F0B24A; --warn-soft:#3A2D12; --bad:#FF8A80; --bad-soft:#3E1D1B;
+  --r1:#8196FF; --r2:#3CC7B5; --r3:#FB8A5A; --r4:#C084FC; --r5:#E3B341; --r6:#F472B6;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); --av-ink:#10141C;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:28px} h2{font-size:20px} h3{font-size:16px}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* prototype bar */
+.proto{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:8px 16px;background:#0B0F16;color:#E7EAF0;font-size:13px}
+.proto b{font-family:var(--f-mono);letter-spacing:.04em}
+.proto label{display:flex;align-items:center;gap:8px}
+.proto select{background:transparent;color:#E7EAF0;border:1px solid rgba(231,234,240,.4);border-radius:6px;padding:3px 6px}
+.proto select option{color:#18202E;background:#fff}
+.proto .sp{flex:1}
+.proto button{background:transparent;border:1px solid rgba(231,234,240,.4);color:#E7EAF0;border-radius:6px;padding:3px 10px;cursor:pointer}
+
+/* app shell */
+.shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+.side{border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:18px;background:var(--surface)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:700;font-size:19px;padding:0 6px}
+.brand svg{flex:none}
+.projpick{display:flex;flex-direction:column;gap:2px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.projpick b{font-size:14px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--ink);text-decoration:none;font-weight:500}
+.nav a:hover{background:var(--surface-2)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nav a .cnt{margin-left:auto;font-size:12px;color:var(--muted)}
+.nav .sep{height:1px;background:var(--line);margin:8px 4px}
+.me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:8px 6px;border-top:1px solid var(--line);padding-top:14px}
+.main{padding-block:28px 60px;padding-inline:clamp(16px,4vw,40px);min-width:0}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.pagehead .t{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:14px}
+
+/* components */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none;color:var(--ink);white-space:nowrap}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:8px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.pad{padding:20px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:600;background:var(--surface-2);color:var(--ink);border:1px solid transparent;white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.ai{background:var(--accent-soft);color:var(--accent)}
+.chip.line{background:transparent;border-color:var(--line);color:var(--muted);font-weight:500}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+.avatar{width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px;font-weight:700;color:var(--av-ink);flex:none;font-family:var(--f-body)}
+.avatar.lg{width:40px;height:40px;font-size:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:600;font-size:14px}
+.field .hint{font-size:13px;color:var(--muted)}
+.input,.textarea,.select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 12px}
+.textarea{min-height:110px;resize:vertical}
+.input:focus,.textarea:focus,.select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.counter{font-size:12px;color:var(--muted);text-align:right}
+.counter.bad{color:var(--bad)}
+.notice{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:10px;font-size:14px}
+.notice.warn{background:var(--warn-soft);color:var(--ink)} .notice.warn svg{color:var(--warn)}
+.notice.ai{background:var(--accent-soft)} .notice.ai svg{color:var(--accent)}
+.notice.bad{background:var(--bad-soft)} .notice.bad svg{color:var(--bad)}
+.notice svg{flex:none;margin-top:2px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:60;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.overlay{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(2px);display:grid;place-items:center;z-index:50;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);width:min(520px,100%);padding:22px;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
+.loading{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:28px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);width:min(420px,100%)}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--accent-soft);border-top-color:var(--accent);animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.steps{display:flex;flex-direction:column;gap:6px;text-align:left;font-size:14px}
+.steps li{list-style:none;display:flex;gap:8px;align-items:center;color:var(--muted)}
+.steps li.done{color:var(--ink)}
+.steps ul{margin:0;padding:0}
+
+/* auth */
+.auth{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
+.auth-side{background:var(--ink);color:var(--bg);padding:48px clamp(16px,5vw,56px);display:flex;flex-direction:column;justify-content:space-between;gap:32px}
+.auth-side h1{font-size:clamp(30px,4vw,44px);color:var(--bg)}
+.auth-side .brand{padding:0;color:var(--bg)}
+.flowline{display:flex;flex-direction:column;gap:14px;max-width:420px}
+.flowline div{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
+.flowline .n{font-family:var(--f-mono);font-size:12px;border:1px solid color-mix(in srgb,var(--bg) 40%,transparent);border-radius:6px;display:grid;place-items:center;height:24px}
+.flowline p{color:color-mix(in srgb,var(--bg) 78%,transparent)}
+.flowline b{color:var(--bg)}
+.auth-form{display:grid;place-items:center;padding:40px 16px}
+.auth-form form{width:min(400px,100%);display:flex;flex-direction:column;gap:14px}
+.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:10px}
+.tabs button{flex:1;border:0;background:transparent;padding:7px;border-radius:7px;font-weight:600;cursor:pointer;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
+.check input{margin-top:3px;accent-color:var(--accent)}
+
+/* projects list */
+.projcard{display:flex;flex-direction:column;gap:12px;padding:18px;text-decoration:none;color:var(--ink);cursor:pointer;text-align:left}
+.projcard:hover{border-color:var(--accent)}
+.avstack{display:flex}
+.avstack .avatar{border:2px solid var(--surface);margin-left:-8px}
+.avstack .avatar:first-child{margin-left:0}
+.newcard{border-style:dashed;display:grid;place-items:center;min-height:170px;color:var(--muted);font-weight:600;background:transparent}
+
+/* new project */
+.split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;align-items:start}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:9px;width:max-content;background:var(--surface)}
+.stepper button{border:0;background:transparent;width:38px;height:38px;cursor:pointer;font-size:18px}
+.stepper output{min-width:34px;text-align:center;font-family:var(--f-mono);font-weight:700}
+.seats{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.seat{width:26px;height:26px;border-radius:7px;border:1.5px dashed var(--line)}
+.seat.you{border:0;background:var(--accent)}
+.goodlist{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+
+/* plan */
+.effort{display:flex;height:14px;border-radius:7px;overflow:hidden;gap:2px;background:var(--surface-2)}
+.effort span{display:block;height:100%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.slot{display:flex;flex-direction:column;gap:12px;padding:18px;position:relative}
+.slot .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.slot .num{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.slot h3{font-size:18px}
+.swatch{width:12px;height:12px;border-radius:4px;display:inline-block;flex:none}
+.slot ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:3px}
+.skills{display:flex;gap:6px;flex-wrap:wrap}
+.why{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.why b{color:var(--ink);font-weight:600}
+.share{display:flex;align-items:center;gap:8px}
+.share input{width:64px;text-align:right;font-family:var(--f-mono);padding:4px 8px}
+.editable[contenteditable="true"]{outline:1px dashed var(--accent);outline-offset:3px;border-radius:4px}
+.invite{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.code{font-family:var(--f-mono);font-size:22px;font-weight:700;letter-spacing:.12em;padding:6px 12px;border-radius:9px;background:var(--surface-2)}
+.statusline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* roles */
+.ready{display:flex;flex-direction:column}
+.ready > div{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ready > div:last-child{border-bottom:0}
+.match{display:grid;grid-template-columns:minmax(170px,1fr) minmax(200px,1.2fr) minmax(0,2.4fr) auto;gap:18px;align-items:start;padding:18px 20px;border-bottom:1px solid var(--line)}
+.match:last-child{border-bottom:0}
+.match .slotname{display:flex;gap:10px;align-items:flex-start}
+.match .slotname b{display:block;font-family:var(--f-display);font-size:16px}
+.fit{display:flex;flex-direction:column;gap:6px}
+.fitbar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.fitbar i{display:block;height:100%;background:var(--accent)}
+.match > *{min-width:0}
+.who{display:flex;gap:10px;align-items:center;min-width:0}
+.who select{padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);flex:1;min-width:0;width:100%}
+.expl{font-size:14px;display:flex;flex-direction:column;gap:6px}
+.expl q{quotes:"\201C" "\201D"}
+.src{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+
+/* raci */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table.raci{border-collapse:collapse;width:100%;min-width:760px}
+.raci th,.raci td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:center;vertical-align:middle}
+.raci thead th{font-size:13px;font-weight:600;background:var(--surface-2);position:sticky;top:0}
+.raci th.act,.raci td.act{text-align:left}
+.raci td.act{font-weight:500}
+.raci tr:last-child td{border-bottom:0}
+.raci .colhead{display:flex;flex-direction:column;align-items:center;gap:3px}
+.raci .colhead small{color:var(--muted);font-weight:500}
+.cell{width:38px;height:34px;border-radius:8px;border:1px solid var(--line);background:transparent;font-family:var(--f-mono);font-weight:700;cursor:pointer}
+.cell:hover{border-color:var(--accent)}
+.cell.R{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cell.A{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cell.C{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.cell.I{background:var(--surface-2);color:var(--muted);border-color:transparent}
+.rkey{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px}
+.rkey span{display:inline-flex;gap:8px;align-items:center}
+.rkey .cell{width:26px;height:24px;cursor:default;font-size:12px}
+
+/* board */
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px 4px 4px;display:inline-flex;gap:6px;align-items:center;cursor:pointer;font-size:13px;font-weight:600}
+.filters button.all{padding:4px 12px}
+.filters button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.filters .avatar{width:22px;height:22px;font-size:10px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.col{background:var(--surface-2);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:200px}
+.col.over{outline:2px dashed var(--accent);outline-offset:-2px}
+.colhead{display:flex;justify-content:space-between;align-items:center;padding:2px 4px}
+.colhead h3{font-size:15px;display:flex;gap:8px;align-items:center}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;cursor:grab;text-align:left;width:100%}
+.card:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.card.dragging{opacity:.5}
+.card .t{font-weight:600;font-size:14.5px}
+.card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card .by{display:flex;gap:8px;align-items:center;font-size:13px;min-width:0}
+.card .by span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .by .avatar{width:24px;height:24px;font-size:10px}
+.hrs{font-family:var(--f-mono);font-size:12.5px;font-weight:700;background:var(--surface-2);padding:2px 7px;border-radius:6px;white-space:nowrap}
+.card.done .t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.unassigned{width:24px;height:24px;border-radius:50%;border:1.5px dashed var(--muted);flex:none}
+
+/* dashboard */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.kpi{padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.kpi .v{font-family:var(--f-display);font-size:30px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:15px;color:var(--muted);font-weight:500;margin-left:4px}
+.chart svg{width:100%;height:auto;display:block}
+table.load{border-collapse:collapse;width:100%;min-width:640px}
+.load th,.load td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+.load th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.load td.n,.load th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.load tr:last-child td{border-bottom:0}
+.sharebar{display:flex;align-items:center;gap:8px}
+.sharebar .b{flex:1;height:6px;border-radius:3px;background:var(--surface-2);position:relative;min-width:60px}
+.sharebar .b i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--muted)}
+.sharebar .b em{position:absolute;top:-3px;width:2px;height:12px;background:var(--ink)}
+
+/* profile */
+.tagbox{display:flex;flex-wrap:wrap;gap:6px;border:1px solid var(--line);border-radius:9px;padding:6px;background:var(--surface)}
+.tagbox input{border:0;outline:0;flex:1;min-width:120px;padding:4px 6px;background:transparent}
+.tag{display:inline-flex;align-items:center;gap:4px;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:3px 4px 3px 9px;font-size:13px;font-weight:600}
+.tag button{border:0;background:transparent;color:inherit;cursor:pointer;padding:0 4px;font-size:15px;line-height:1}
+.suggest{display:flex;gap:6px;flex-wrap:wrap}
+.suggest button{border:1px dashed var(--line);background:transparent;border-radius:6px;padding:3px 9px;font-size:13px;cursor:pointer;color:var(--muted)}
+.danger-zone{border:1px solid color-mix(in srgb,var(--bad) 40%,var(--line))}
+
+/* join */
+.joinwrap{display:grid;place-items:center;padding:48px 16px;min-height:100vh}
+.joincard{width:min(520px,100%);padding:28px;display:flex;flex-direction:column;gap:18px}
+
+/* members */
+.memberrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.memberrow:last-child{border-bottom:0}
+.memberrow .nm{flex:1;min-width:160px}
+
+@media (max-width:980px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{min-width:0;border-right:0;border-bottom:1px solid var(--line);padding:12px 16px;gap:10px}
+  .side .projpick,.side .me{display:none}
+  .nav{flex-direction:row;overflow-x:auto;gap:4px}
+  .nav a{white-space:nowrap;padding:6px 10px}
+  .nav .sep{display:none}
+  .nav a .cnt{display:none}
+  .split,.grid2{grid-template-columns:1fr}
+  .grid3{grid-template-columns:1fr 1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .match{grid-template-columns:1fr 1fr}
+  .match .expl{grid-column:1 / -1}
+  .match .src{grid-column:1 / -1;flex-direction:row;justify-content:flex-start}
+  .auth{grid-template-columns:1fr}
+}
+@media (max-width:700px){
+  .board{grid-template-columns:1fr}
+  .grid3{grid-template-columns:1fr}
+  .match{grid-template-columns:1fr}
+  h1{font-size:24px}
+}
+</style>
+
+<div id="app"></div>
+<div id="layer"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- icons ---------- */
+const I = {
+  logo:'<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="14" width="6" height="11" rx="2" fill="var(--accent)"/><rect x="10" y="8" width="6" height="17" rx="2" fill="currentColor"/><rect x="19" y="3" width="6" height="22" rx="2" fill="var(--accent)" opacity=".45"/></svg>',
+  spark:'<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0l1.7 5.1L15 7l-5.3 1.9L8 14l-1.7-5.1L1 7l5.3-1.9zM13.5 10.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>',
+  plan:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="2" width="6" height="6" rx="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5"/><rect x="2" y="10" width="6" height="6" rx="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5"/></svg>',
+  roles:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6.5" cy="6" r="2.6"/><path d="M1.8 15.5c.6-2.8 2.4-4.2 4.7-4.2s4.1 1.4 4.7 4.2"/><circle cx="13" cy="6.5" r="2.1"/><path d="M12.5 10.8c1.9 0 3.3 1.2 3.8 3.5"/></svg>',
+  raci:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="2.5" width="14" height="13" rx="2"/><path d="M2 7h14M2 11h14M7 2.5v13"/></svg>',
+  board:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="2.5" width="4" height="13" rx="1.2"/><rect x="7.5" y="2.5" width="4" height="9" rx="1.2"/><rect x="13" y="2.5" width="3" height="6" rx="1.2"/></svg>',
+  dash:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 16h14"/><path d="M4.5 13V8M9 13V4M13.5 13V9.5"/></svg>',
+  gear:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="9" cy="9" r="2.4"/><path d="M9 1.8v2M9 14.2v2M1.8 9h2M14.2 9h2M3.9 3.9l1.4 1.4M12.7 12.7l1.4 1.4M3.9 14.1l1.4-1.4M12.7 5.3l1.4-1.4"/></svg>',
+  user:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="9" cy="6" r="3"/><path d="M3 16c.7-3.2 3-4.8 6-4.8s5.3 1.6 6 4.8"/></svg>',
+  folder:'<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 5.5a1.5 1.5 0 0 1 1.5-1.5h3.3l1.7 1.8h6A1.5 1.5 0 0 1 16 7.3v6.2A1.5 1.5 0 0 1 14.5 15h-11A1.5 1.5 0 0 1 2 13.5z"/></svg>',
+  plus:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>',
+  copy:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.8"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg>',
+  check:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg>',
+  warn:'<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="currentColor" d="M9 1.5l8 14H1zM8.2 7v4.4h1.6V7zm0 5.6v1.6h1.6v-1.6z"/></svg>',
+  refresh:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M13.5 6.5A5.5 5.5 0 0 0 3 5M2.5 9.5A5.5 5.5 0 0 0 13 11"/><path d="M3 1.8V5h3.2M13 14.2V11H9.8"/></svg>',
+  pen:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10.8 2.7l2.5 2.5L5.5 13H3v-2.5z"/></svg>',
+  cal:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="1.8"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3"/></svg>',
+  out:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 2.5H3.5A1.5 1.5 0 0 0 2 4v8a1.5 1.5 0 0 0 1.5 1.5H6M10.5 11l3-3-3-3M13.5 8H6"/></svg>'
+};
+
+/* ---------- sample data ---------- */
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+function seed(){
+  return {
+    user:"m1",
+    project:{
+      id:"p1", title:"StudySpace",
+      description:"A web app for SDU students to find and book free group-study rooms in the library. Students see a map of rooms with live availability, book a 1–2 hour slot and get a QR code to check in at the door. Librarians see occupancy statistics to plan opening hours. We need user accounts, a booking API that never double-books a room, a clean mobile-friendly interface and basic analytics.",
+      deadline:"2026-12-11", teamSize:5, context:"PjM 101 · Fall 2026", code:"K7Q2PM", planStatus:"approved"
+    },
+    members:[
+      {id:"m1",name:"Aruzhan Sadykova",short:"Aruzhan",ini:"AS",color:"--r1",owner:true,profile:true,
+       strengths:"I organise group work well and keep deadlines. I like talking to the instructor and presenting. I am careful with details and usually find bugs in my friends' code.",
+       weaknesses:"Not strong at writing backend code.", tags:["Planning","Communication","Testing","Notion"], pref:"Project management"},
+      {id:"m2",name:"Daniyar Kenzhebekov",short:"Daniyar",ini:"DK",color:"--r2",profile:true,
+       strengths:"Go and PostgreSQL. I built a REST API during my internship and I like algorithms and clean data models.",
+       weaknesses:"I don't enjoy CSS or visual design.", tags:["Go","SQL","Docker","REST"], pref:""},
+      {id:"m3",name:"Madina Tulegenova",short:"Madina",ini:"MT",color:"--r4",profile:true,
+       strengths:"Figma and UI design. I ran user interviews for my HCI course and like making things easy to use.",
+       weaknesses:"Little coding beyond HTML and CSS.", tags:["Figma","User research","CSS"], pref:"Design"},
+      {id:"m4",name:"Timur Akhmetov",short:"Timur",ini:"TA",color:"--r3",profile:true,
+       strengths:"React and TypeScript. I made two front-end pet projects and I care about fast, responsive pages.",
+       weaknesses:"I hate writing documentation.", tags:["React","TypeScript","Tailwind"], pref:""},
+      {id:"m5",name:"Dana Bekova",short:"Dana",ini:"DB",color:"--r5",profile:true,
+       strengths:"Python, pandas and charts from my data analysis course. I'm curious about how APIs work.",
+       weaknesses:"I get nervous when presenting.", tags:["Python","SQL","Matplotlib"], pref:"I want to learn backend"}
+    ],
+    slots:[
+      {id:"s1",name:"Project Manager & QA Lead",color:"--r1",share:16,
+       summary:"Owns the plan, the deadline and the quality of every demo.",
+       resp:["Sprint plan and weekly sync","Communication with the instructor","Test plan for the booking flow","TSIS reports and final demo"],
+       skills:["Planning","Communication","Testing","Documentation"],
+       why:"A 5-person team with an 11-week deadline needs one owner for plan and quality. QA is combined with PM because the booking flow is small enough to test within that time."},
+      {id:"s2",name:"Backend Developer",color:"--r2",share:26,
+       summary:"Builds the booking API and the database behind it.",
+       resp:["Rooms, slots and bookings schema","Booking API with overlap checks","Register / login","Docker setup and seed data"],
+       skills:["Go","PostgreSQL","REST API","Auth"],
+       why:"The description says a room must never be double-booked. That needs a careful API and database, the largest share of the work."},
+      {id:"s3",name:"Frontend Developer",color:"--r3",share:22,
+       summary:"Turns the room map and booking flow into a fast, responsive UI.",
+       resp:["Room list, filters and map view","Booking form and validation","QR code screen","Responsive layout for phones"],
+       skills:["React","TypeScript","CSS","Responsive design"],
+       why:"Students will book from their phones between classes, so the interface has to be quick and mobile-friendly."},
+      {id:"s4",name:"UX/UI Designer",color:"--r4",share:16,
+       summary:"Designs the room map and checks it with real students.",
+       resp:["Student interviews","Wireframes and room map design","Usability test with 5 students","Design handoff to frontend"],
+       skills:["Figma","User research","UI design","Accessibility"],
+       why:"The description asks for a clean mobile-friendly interface and a room map. Both depend on good design and testing with students."},
+      {id:"s5",name:"Data & Integration Engineer",color:"--r5",share:20,
+       summary:"Builds occupancy statistics and the QR check-in.",
+       resp:["Occupancy statistics for librarians","QR code generation and check-in","Charts on the librarian page","Realistic seed data"],
+       skills:["SQL","Python","Data visualisation","APIs"],
+       why:"Librarians need occupancy statistics to plan opening hours, and check-in by QR code needs its own integration."}
+    ],
+    matching:{
+      ran:true,
+      rows:[
+        {slot:"s1",member:"m1",fit:91,runner:"s4",state:"accepted",source:"ai_accepted",
+         expl:"You write that you “organise group work well and keep deadlines” and like presenting, which is the core of the PM role. Being “careful with details” and finding bugs fits the QA half of this slot."},
+        {slot:"s2",member:"m2",fit:94,runner:"s5",state:"accepted",source:"ai_accepted",
+         expl:"You built a REST API in Go with PostgreSQL during your internship, which is exactly the booking API this project needs. You prefer data models over CSS, so backend fits better than frontend."},
+        {slot:"s3",member:"m4",fit:88,runner:"s2",state:"pending",source:"ai",
+         expl:"You made two React and TypeScript pet projects and “care about fast, responsive pages”. Students will book from their phones, so this matters most here."},
+        {slot:"s4",member:"m3",fit:92,runner:"s1",state:"accepted",source:"ai_accepted",
+         expl:"You design in Figma and “ran user interviews” before. This slot needs both: the room map design and a usability test with students."},
+        {slot:"s5",member:"m5",fit:81,runner:"s2",state:"pending",source:"ai",
+         expl:"Python, pandas and charts match the occupancy statistics for librarians. You also say you are “curious about how APIs work”: this slot builds the QR check-in API, and backend is your second-best fit (63)."}
+      ],
+      gaps:["Accessibility testing"],
+      note:"Dana is curious about APIs. Pairing her with Daniyar on the QR check-in endpoint would give her that practice without moving her from the slot she fits best."
+    },
+    raci:{
+      acts:[
+        {id:"a1",name:"Define scope & backlog",v:{s1:"A",s2:"C",s3:"C",s4:"R",s5:"I"}},
+        {id:"a2",name:"Student interviews & wireframes",v:{s1:"R",s2:"I",s3:"C",s4:"A",s5:"I"}},
+        {id:"a3",name:"Database & booking API",v:{s1:"I",s2:"A",s3:"C",s4:"I",s5:"R"}},
+        {id:"a4",name:"Room map & booking UI",v:{s1:"I",s2:"C",s3:"A",s4:"R",s5:"I"}},
+        {id:"a5",name:"QR check-in",v:{s1:"I",s2:"R",s3:"R",s4:"C",s5:"A"}},
+        {id:"a6",name:"Occupancy statistics for librarians",v:{s1:"I",s2:"C",s3:"R",s4:"C",s5:"A"}},
+        {id:"a7",name:"Testing & bug fixing",v:{s1:"A",s2:"R",s3:"R",s4:"C",s5:"R"}},
+        {id:"a8",name:"Demo & final report",v:{s1:"A",s2:"C",s3:"C",s4:"R",s5:"C"}}
+      ]
+    },
+    tasks:[
+      {id:"t1",title:"Write project charter & scope",m:"m1",h:4,st:"done"},
+      {id:"t2",title:"Sprint 2 plan and RACI review",m:"m1",h:6,st:"doing"},
+      {id:"t3",title:"Test plan for the booking flow",m:"m1",h:4,st:"todo"},
+      {id:"t5",title:"DB schema: rooms, slots, bookings",m:"m2",h:6,st:"done"},
+      {id:"t4",title:"Booking API: create and cancel",m:"m2",h:12,st:"doing"},
+      {id:"t8",title:"Docker compose + seed data",m:"m2",h:5,st:"doing"},
+      {id:"t6",title:"Overlap check for bookings",m:"m2",h:8,st:"todo"},
+      {id:"t7",title:"Register / login endpoints",m:"m2",h:6,st:"todo"},
+      {id:"t9",title:"Interview 5 students",m:"m3",h:4,st:"done"},
+      {id:"t10",title:"Room map wireframe",m:"m3",h:4,st:"doing"},
+      {id:"t11",title:"Usability test script",m:"m3",h:3,st:"todo"},
+      {id:"t12",title:"Room list & filters UI",m:"m4",h:10,st:"doing"},
+      {id:"t13",title:"Booking form + validation",m:"m4",h:6,st:"todo"},
+      {id:"t14",title:"Responsive layout for phones",m:"m4",h:4,st:"todo"},
+      {id:"t16",title:"QR code on booking",m:"m5",h:5,st:"doing"},
+      {id:"t15",title:"Occupancy statistics query",m:"m5",h:8,st:"todo"},
+      {id:"t17",title:"Librarian page charts",m:null,h:3,st:"todo"}
+    ],
+    filter:"all",
+    authTab:"login",
+    planEdit:false
+  };
+}
+let S = seed();
+
+/* ---------- helpers ---------- */
+const $ = (s,r=document)=>r.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mem = id => S.members.find(m=>m.id===id);
+const slot = id => S.slots.find(s=>s.id===id);
+const col = v => `var(${v})`;
+const av = (m,cls="") => m ? `<span class="avatar ${cls}" style="background:${col(m.color)}" title="${esc(m.name)}">${esc(m.ini)}</span>` : `<span class="unassigned" title="Unassigned"></span>`;
+const fmtH = h => (Math.round(h*10)/10).toString().replace(/\.0$/,"");
+function daysLeft(){ const d=new Date(S.project.deadline+"T00:00:00"); return Math.max(0,Math.round((d-TODAY)/864e5)); }
+function fmtDate(iso){ return new Date(iso+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
+function assignedSlotOf(mid){ const r=S.matching.rows.find(r=>r.member===mid); return r?slot(r.slot):null; }
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.setAttribute("role","status"); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2400); }
+function copyText(txt){ try{ navigator.clipboard.writeText(txt).then(()=>toast("Copied: "+txt),()=>toast("Copy this: "+txt)); }catch(e){ toast("Copy this: "+txt); } }
+
+/* ---------- routing ---------- */
+const SCREENS = [
+  ["login","Login / Register"],["projects","My projects"],["new","New project"],["join","Join by invite link"],
+  ["profile","My profile"],["plan","Role plan"],["roles","Team roles (matching)"],["raci","RACI"],
+  ["board","Task board"],["dashboard","Workload dashboard"],["settings","Project settings"]
+];
+let AUTH=false;
+function current(){ const h=(location.hash||"").replace("#",""); const k=SCREENS.some(s=>s[0]===h)?h:"projects"; return AUTH?k:"login"; }
+function go(k){ if(location.hash!=="#"+k){ location.hash=k; } else render(); window.scrollTo(0,0); }
+window.addEventListener("hashchange",()=>{ render(); window.scrollTo(0,0); });
+
+/* ---------- shell ---------- */
+function shell(active, inner){
+  const p=S.project;
+  const link=(k,ic,l,extra="")=>`<a href="#${k}" ${active===k?'aria-current="page"':''}>${I[ic]}<span>${l}</span>${extra}</a>`;
+  const me=mem(S.user);
+  const active_n=S.tasks.filter(t=>t.st!=="done").length;
+  return `<div class="shell">
+    <aside class="side">
+      <div class="brand">${I.logo}<span>TeamLoad</span></div>
+      <div class="projpick"><span class="eyebrow">Project</span><b>${esc(p.title)}</b><span class="small muted">${p.teamSize} members · due ${fmtDate(p.deadline)}</span></div>
+      <nav class="nav" aria-label="Main">
+        ${link("projects","folder","My projects")}
+        <div class="sep"></div>
+        ${link("plan","plan","Role plan",`<span class="cnt">${p.planStatus==="approved"?"✓":"draft"}</span>`)}
+        ${link("roles","roles","Team roles")}
+        ${link("raci","raci","RACI")}
+        ${link("board","board","Board",`<span class="cnt mono">${active_n}</span>`)}
+        ${link("dashboard","dash","Dashboard")}
+        ${link("settings","gear","Settings")}
+        <div class="sep"></div>
+        ${link("profile","user","My profile")}
+      </nav>
+      <div class="me">${av(me)}<div style="min-width:0"><b class="small" style="display:block">${esc(me.name)}</b><span class="small muted">Owner</span></div>
+        <a class="btn ghost sm" href="#login" data-logout="1" title="Log out" aria-label="Log out" style="margin-left:auto">${I.out}</a></div>
+    </aside>
+    <main class="main" id="main">${inner}</main>
+  </div>`;
+}
+function head(eyebrow,title,sub,actions=""){
+  return `<div class="pagehead"><div class="t"><span class="eyebrow">${eyebrow}</span><h1>${title}</h1>${sub?`<p class="muted">${sub}</p>`:""}</div><div class="row">${actions}</div></div>`;
+}
+
+/* ---------- screens ---------- */
+function vLogin(){
+  const reg = S.authTab==="register";
+  return `<div class="auth">
+    <section class="auth-side">
+      <div class="brand">${I.logo}<span>TeamLoad</span></div>
+      <div class="stack" style="gap:28px">
+        <h1>Describe the project.<br>Get the team it needs.</h1>
+        <div class="flowline">
+          <div><span class="n">1</span><p><b>Start a project.</b> Write what you build, set the deadline and the team size.</p></div>
+          <div><span class="n">2</span><p><b>AI designs the roles.</b> One role per seat, with responsibilities and skills for this project.</p></div>
+          <div><span class="n">3</span><p><b>Members join and describe themselves.</b> AI matches each person to a role and explains why.</p></div>
+          <div><span class="n">4</span><p><b>Track the work fairly.</b> RACI, task board and a workload dashboard that shows who is overloaded.</p></div>
+        </div>
+      </div>
+      <p class="small" style="opacity:.6">The AI suggests. Your team decides.</p>
+    </section>
+    <section class="auth-form">
+      <form id="authForm" novalidate>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" aria-selected="${!reg}" data-tab="login">Log in</button>
+          <button type="button" role="tab" aria-selected="${reg}" data-tab="register">Create account</button>
+        </div>
+        <h2>${reg?"Create your account":"Welcome back"}</h2>
+        ${reg?`<div class="field"><label for="fName">Full name</label><input class="input" id="fName" value="Aruzhan Sadykova" required></div>`:""}
+        <div class="field"><label for="fEmail">Email</label><input class="input" id="fEmail" type="email" value="aruzhan.s@stu.sdu.edu.kz" required>
+          ${reg?`<span class="hint">A university email is preferred, but any email works.</span>`:""}</div>
+        <div class="field"><label for="fPass">Password</label><input class="input" id="fPass" type="password" value="studyspace26" required minlength="8">
+          ${reg?`<span class="hint">At least 8 characters.</span>`:""}</div>
+        ${reg?`<label class="check" for="fConsent"><input type="checkbox" id="fConsent"><span>I agree that my profile text and project descriptions are sent to an AI service to suggest roles. I can delete my profile at any time.</span></label>
+        <p class="small" id="consentErr" style="color:var(--bad)" hidden>Please accept to continue. The AI needs your profile text to suggest a role.</p>`:""}
+        <button class="btn primary" type="submit" style="justify-content:center">${reg?"Create account":"Log in"}</button>
+        <p class="small muted" style="text-align:center">${reg?"Already have an account? Use the Log in tab.":"New here? Use the Create account tab."}</p>
+      </form>
+    </section>
+  </div>`;
+}
+
+function vProjects(){
+  const p=S.project;
+  const done=S.tasks.filter(t=>t.st==="done").reduce((a,t)=>a+t.h,0), all=S.tasks.reduce((a,t)=>a+t.h,0);
+  return shell("projects", head("Workspace","My projects","Projects you created or joined.",`<a class="btn primary" href="#new">${I.plus}New project</a><a class="btn" href="#join">Join with a code</a>`)+`
+  <div class="grid3">
+    <a class="panel projcard" href="#dashboard">
+      <div class="row" style="justify-content:space-between"><span class="chip ok"><span class="dot"></span>Roles confirmed</span><span class="small muted">Owner</span></div>
+      <div><h2>${esc(p.title)}</h2><p class="small muted">${esc(p.context)}</p></div>
+      <div class="row small muted">${I.cal}<span>Due ${fmtDate(p.deadline)} · <b class="mono" style="color:var(--ink)">${daysLeft()}</b> days left</span></div>
+      <div class="effort" aria-label="Progress"><span style="width:${Math.round(done/all*100)}%;background:var(--accent)"></span></div>
+      <div class="row" style="justify-content:space-between"><div class="avstack">${S.members.map(m=>av(m)).join("")}</div><span class="small muted mono">${fmtH(done)} / ${fmtH(all)} h done</span></div>
+    </a>
+    <div class="panel projcard" style="cursor:default">
+      <div class="row" style="justify-content:space-between"><span class="chip warn"><span class="dot"></span>Waiting for profiles</span><span class="small muted">Member</span></div>
+      <div><h2>Qazaq Recipes Bot</h2><p class="small muted">Open Source course · SIS 4</p></div>
+      <div class="row small muted">${I.cal}<span>Due 20 Nov 2026 · role plan approved</span></div>
+      <div class="effort"><span style="width:8%;background:var(--accent)"></span></div>
+      <div class="row" style="justify-content:space-between"><div class="avstack"><span class="avatar" style="background:var(--r6)">NK</span>${av(mem("m1"))}<span class="avatar" style="background:var(--r2)">EZ</span></div><span class="small muted">3 of 4 joined</span></div>
+    </div>
+    <a class="panel projcard newcard" href="#new"><span class="row">${I.plus}Start a new project</span></a>
+  </div>`);
+}
+
+function vNew(){
+  const f = S.draft || {title:"StudySpace",description:S.project.description,deadline:S.project.deadline,size:5,context:"PjM 101 · Fall 2026"};
+  S.draft=f;
+  const seats=Array.from({length:f.size},(_,i)=>`<span class="seat ${i===0?"you":""}" title="${i===0?"You":"Open seat"}"></span>`).join("");
+  const len=f.description.length;
+  return shell("projects", head("New project","Describe your project","The AI uses this to decide which roles your team needs.")+`
+  <div class="split">
+    <form class="panel pad stack" id="newForm" novalidate>
+      <div class="field"><label for="nTitle">Project title</label><input class="input" id="nTitle" maxlength="100" value="${esc(f.title)}"></div>
+      <div class="field"><label for="nDesc">What are you building?</label>
+        <textarea class="textarea" id="nDesc" style="min-height:170px" maxlength="3000">${esc(f.description)}</textarea>
+        <div class="row" style="justify-content:space-between"><span class="hint">Goal, main features, who uses it, any known technology.</span><span class="counter mono ${len<100?"bad":""}" id="nCount">${len} / 3000 · min 100</span></div></div>
+      <div class="grid2">
+        <div class="field"><label for="nDeadline">Deadline</label><input class="input" id="nDeadline" type="date" value="${esc(f.deadline)}"><span class="hint">At least 7 days from today.</span></div>
+        <div class="field"><label>Team size</label>
+          <div class="row"><div class="stepper"><button type="button" data-step="-1" aria-label="Fewer members">−</button><output id="nSize" aria-live="polite">${f.size}</output><button type="button" data-step="1" aria-label="More members">+</button></div><span class="hint">3–6, including you</span></div>
+          <div class="seats" aria-hidden="true">${seats}</div></div>
+      </div>
+      <div class="field"><label for="nCtx">Course or context <span class="muted" style="font-weight:400">(optional)</span></label><input class="input" id="nCtx" value="${esc(f.context)}"></div>
+      <p class="small" id="newErr" style="color:var(--bad)" hidden></p>
+      <div class="row"><button class="btn primary" type="submit">${I.spark}Generate role plan</button><a class="btn ghost" href="#projects">Cancel</a></div>
+    </form>
+    <aside class="stack">
+      <div class="panel pad stack" style="gap:10px">
+        <h3>What makes a good description</h3>
+        <ul class="goodlist">
+          <li>What the product does and for whom.</li>
+          <li>The 3–5 main features.</li>
+          <li>Anything special: a map, payments, AI, hardware, analytics.</li>
+          <li>Technology you already chose, if any.</li>
+        </ul>
+      </div>
+      <div class="notice ai">${I.spark}<div><b>What happens next.</b> The AI proposes ${f.size} roles, one per seat. You can edit or regenerate them before inviting your team.</div></div>
+    </aside>
+  </div>`);
+}
+
+function vJoin(){
+  const p=S.project, owner=mem("m1");
+  return `<div class="joinwrap"><div class="panel joincard">
+    <div class="brand" style="padding:0">${I.logo}<span>TeamLoad</span></div>
+    <div class="stack" style="gap:6px"><span class="eyebrow">You're invited to join</span><h1>${esc(p.title)}</h1><p class="muted">${esc(p.context)} · created by ${esc(owner.name)}</p></div>
+    <p>${esc(p.description.slice(0,190))}…</p>
+    <div class="grid2">
+      <div class="panel pad" style="padding:12px 14px"><span class="eyebrow">Deadline</span><p><b>${fmtDate(p.deadline)}</b></p></div>
+      <div class="panel pad" style="padding:12px 14px"><span class="eyebrow">Team</span><p><b class="mono">${S.members.length-1} / ${p.teamSize}</b> joined</p></div>
+    </div>
+    <div class="stack" style="gap:8px"><span class="eyebrow">Open roles in this project</span><div class="skills">${S.slots.map(s=>`<span class="chip line"><span class="swatch" style="background:${col(s.color)}"></span>${esc(s.name)}</span>`).join("")}</div>
+      <p class="small muted">After you join and fill in your profile, the AI suggests which role fits you best.</p></div>
+    <div class="row"><button class="btn primary" type="button" data-act="join">Join ${esc(p.title)}</button><span class="small muted mono">Code ${p.code}</span></div>
+  </div></div>`;
+}
+
+function vProfile(){
+  const m=mem(S.user);
+  const sl=m.strengths.length, wl=m.weaknesses.length;
+  return shell("profile", head("Profile","My skills profile","Used in all your projects. The AI reads only this page to suggest your role.")+`
+  <div class="split">
+    <form class="panel pad stack" id="profForm" novalidate>
+      <div class="field"><label for="pStr">Strengths: what are you good at?</label>
+        <textarea class="textarea" id="pStr" maxlength="1000">${esc(m.strengths)}</textarea>
+        <div class="row" style="justify-content:space-between"><span class="hint">Skills, tools, languages, and what you enjoy doing in a team.</span><span class="counter mono ${sl<30?"bad":""}" data-count="pStr" data-min="30">${sl} / 1000</span></div></div>
+      <div class="field"><label for="pWeak">Weaknesses: what is hard for you?</label>
+        <textarea class="textarea" id="pWeak" style="min-height:80px" maxlength="1000">${esc(m.weaknesses)}</textarea>
+        <div class="row" style="justify-content:space-between"><span class="hint">Be honest: the AI uses this to avoid a bad fit.</span><span class="counter mono ${wl<10?"bad":""}" data-count="pWeak" data-min="10">${wl} / 1000</span></div></div>
+      <div class="row"><button class="btn primary" type="submit">Save profile</button><span class="small muted">Saving marks your old AI suggestions as outdated.</span></div>
+    </form>
+    <aside class="stack">
+      <div class="panel pad stack" style="gap:10px">
+        <h3>How the AI uses your profile</h3>
+        <p class="small">It reads only your strengths and weaknesses, compares them with each role's responsibilities and skills, then explains its choice by quoting you.</p>
+        <p class="small muted">It never uses your name, gender, age or nationality. Your team can always change the role it suggests.</p>
+      </div>
+      <div class="panel pad stack danger-zone" style="gap:10px" id="dz">
+        <h3>Delete my profile</h3>
+        <p class="small muted">Removes your profile and AI results, takes you out of all projects and unassigns your tasks.</p>
+        <div id="dzBody"><button class="btn danger sm" type="button" data-act="askdel">Delete profile…</button></div>
+      </div>
+    </aside>
+  </div>`);
+}
+
+function vPlan(){
+  const p=S.project, ed=S.planEdit, sum=S.slots.reduce((a,s)=>a+Number(s.share||0),0);
+  const approved=p.planStatus==="approved";
+  const status = approved?`<span class="chip ok">${I.check}Approved</span>`:`<span class="chip warn"><span class="dot"></span>Draft</span>`;
+  return shell("plan", head("Role plan",`${S.slots.length} roles for ${esc(p.title)}`,`Designed by AI from your description, deadline (${fmtDate(p.deadline)}) and team size.`,
+   ed?`<button class="btn primary" type="button" data-act="saveplan" ${sum!==100?"disabled":""}>${I.check}Save changes</button><button class="btn" type="button" data-act="canceledit">Cancel</button>`
+     :`<button class="btn" type="button" data-act="edit">${I.pen}Edit</button><button class="btn" type="button" data-act="regen">${I.refresh}Regenerate</button>${approved?"":`<button class="btn primary" type="button" data-act="approve">${I.check}Approve plan</button>`}`)+`
+  <div class="stack" style="gap:20px">
+    <div class="panel pad stack" style="gap:12px">
+      <div class="row" style="justify-content:space-between"><div class="statusline">${status}<span class="chip ai">${I.spark}Generated by AI</span><span class="small muted">Everything here can be edited.</span></div>
+        <span class="small mono ${sum!==100?"":"muted"}" style="${sum!==100?"color:var(--bad);font-weight:700":""}">Effort total ${sum}%${sum!==100?" · must be 100%":""}</span></div>
+      <div class="effort" role="img" aria-label="Effort share by role">${S.slots.map(s=>`<span style="width:${s.share}%;background:${col(s.color)}" title="${esc(s.name)} ${s.share}%"></span>`).join("")}</div>
+      <div class="legend">${S.slots.map(s=>`<span><span class="swatch" style="background:${col(s.color)}"></span>${esc(s.name)} <b class="mono">${s.share}%</b></span>`).join("")}</div>
+    </div>
+    <div class="slots">
+      ${S.slots.map((s,i)=>`<article class="panel slot">
+        <div class="top"><div class="stack" style="gap:6px"><span class="num">SEAT ${i+1} OF ${S.slots.length}</span>
+          <h3 class="editable" data-slotfield="name" data-id="${s.id}" ${ed?'contenteditable="true"':""}>${esc(s.name)}</h3></div>
+          <span class="swatch" style="background:${col(s.color)};width:14px;height:14px;margin-top:4px"></span></div>
+        <p class="editable" data-slotfield="summary" data-id="${s.id}" ${ed?'contenteditable="true"':""}>${esc(s.summary)}</p>
+        <div class="stack" style="gap:6px"><span class="eyebrow">Responsibilities</span><ul>${s.resp.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>
+        <div class="stack" style="gap:6px"><span class="eyebrow">Skills needed</span><div class="skills">${s.skills.map(k=>`<span class="chip line">${esc(k)}</span>`).join("")}</div></div>
+        <div class="share"><span class="eyebrow">Effort share</span>${ed?`<input class="input" type="number" min="5" max="60" step="1" value="${s.share}" data-share="${s.id}" aria-label="Effort share for ${esc(s.name)}"><span class="small">%</span>`:`<b class="mono">${s.share}%</b>`}</div>
+        <p class="why"><b>Why this project needs it.</b> ${esc(s.why)}</p>
+      </article>`).join("")}
+    </div>
+    <div class="grid2">
+      <div class="panel pad stack" style="gap:10px">
+        <h3>Not quite right?</h3>
+        <p class="small muted">Tell the AI what to change and it will redesign the roles. Your current plan stays until you save the new one.</p>
+        <textarea class="textarea" id="regenNote" style="min-height:70px" placeholder="For example: we need more focus on design, merge the data role into backend"></textarea>
+        <div><button class="btn" type="button" data-act="regen">${I.refresh}Regenerate with this note</button></div>
+      </div>
+      <div class="panel pad stack" style="gap:10px">
+        <h3>Invite your team</h3>
+        <p class="small muted">${approved?"Share the code or link. The project is full at "+p.teamSize+" members.":"Members can join now. Matching starts after you approve the plan."}</p>
+        <div class="invite"><span class="code">${p.code}</span><button class="btn sm" type="button" data-copy="${p.code}">${I.copy}Copy code</button><button class="btn sm" type="button" data-copy="teamload.local/join/${p.code}">${I.copy}Copy link</button></div>
+        <p class="small"><b class="mono">${S.members.length} / ${p.teamSize}</b> joined · <a href="#roles">Go to team roles</a></p>
+      </div>
+    </div>
+  </div>`);
+}
+
+function vRoles(){
+  const M=S.matching, approved=S.project.planStatus==="approved";
+  const ready=S.members.filter(m=>m.profile).length;
+  const readyList=`<div class="panel pad stack" style="gap:6px">
+      <div class="row" style="justify-content:space-between"><h3>Profiles</h3><span class="chip ${ready===S.members.length?"ok":"warn"} mono">${ready} / ${S.project.teamSize}</span></div>
+      <div class="ready">${S.members.map(m=>`<div>${av(m)}<span style="flex:1">${esc(m.name)}${m.owner?' <span class="small muted">· owner</span>':""}</span>${m.profile?`<span class="chip ok">${I.check}Ready</span>`:`<span class="chip warn">No profile</span>`}</div>`).join("")}</div>
+    </div>`;
+  if(!M.ran){
+    return shell("roles", head("Team roles","Match people to roles","The AI reads every profile and finds the best role for each person across the whole team.")+`
+    <div class="split">
+      <div class="panel pad stack" style="align-items:flex-start">
+        <span class="chip ai">${I.spark}AI matching</span>
+        <h2>${approved?"Everyone is ready.":"Approve the role plan first."}</h2>
+        <p class="muted">${approved?"The AI assigns each of the "+S.slots.length+" roles to one person and explains why. Nothing is final until you accept it.":"Matching needs an approved plan so the roles don't change under your team."}</p>
+        ${approved?`<button class="btn primary" type="button" data-act="runmatch">${I.spark}Run AI matching</button>`:`<a class="btn primary" href="#plan">Open role plan</a>`}
+      </div>
+      ${readyList}
+    </div>`);
+  }
+  const accepted=M.rows.filter(r=>r.state==="accepted").length;
+  const opts=(cur)=>S.members.map(m=>`<option value="${m.id}" ${m.id===cur?"selected":""}>${esc(m.short+" "+m.name.split(" ")[1][0]+".")}</option>`).join("");
+  return shell("roles", head("Team roles","Who does what",`AI matching ran today · ${accepted} of ${M.rows.length} roles confirmed.`,
+    `<button class="btn" type="button" data-act="runmatch">${I.refresh}Run again</button><button class="btn primary" type="button" data-act="acceptall" ${accepted===M.rows.length?"disabled":""}>${I.check}Accept all</button>`)+`
+  <div class="stack" style="gap:16px">
+    ${M.gaps.length?`<div class="notice warn">${I.warn}<div><b>Skill gap:</b> no one in the team listed ${M.gaps.map(esc).join(", ")}. The UX/UI Designer slot needs it for the usability test. Consider learning resources or asking the instructor.</div></div>`:""}
+    ${M.note?`<div class="notice ai">${I.spark}<div><b>Growth note.</b> ${esc(M.note)}</div></div>`:""}
+    <div class="panel" style="overflow:hidden">
+      ${M.rows.map(r=>{const s=slot(r.slot), m=mem(r.member), ru=slot(r.runner);
+        const badge = r.state==="accepted" ? (r.source==="manual"?`<span class="chip">${I.check}Set manually</span>`:`<span class="chip ok">${I.check}Accepted</span>`) : `<span class="chip ai">${I.spark}Suggested</span>`;
+        return `<div class="match">
+          <div class="slotname"><span class="swatch" style="background:${col(s.color)};margin-top:6px"></span><div><b>${esc(s.name)}</b><span class="small muted">${s.share}% of effort</span></div></div>
+          <div class="stack" style="gap:10px">
+            <div class="who">${av(m)}<select aria-label="Person for ${esc(s.name)}" data-reassign="${s.id}">${opts(r.member)}</select></div>
+            <div class="fit"><div class="row small" style="justify-content:space-between"><span class="muted">Fit</span><b class="mono">${r.source==="manual"?"—":r.fit}</b></div><div class="fitbar"><i style="width:${r.source==="manual"?0:r.fit}%"></i></div></div>
+          </div>
+          <div class="expl"><p>${r.source==="manual"?'<span class="muted">Changed by the team. The AI explanation no longer applies.</span>':esc(r.expl)}</p>${r.source==="manual"?"":`<span class="small muted">Also a good fit: ${esc(ru.name)}</span>`}</div>
+          <div class="src">${badge}${r.state!=="accepted"?`<button class="btn sm" type="button" data-accept="${s.id}">Accept</button>`:""}</div>
+        </div>`;}).join("")}
+    </div>
+    <p class="small muted">Changing a person swaps them with whoever held that role. Every change is saved as “set manually”.</p>
+  </div>`);
+}
+
+function raciCheck(a){ const v=Object.values(a.v); const A=v.filter(x=>x==="A").length, R=v.filter(x=>x==="R").length;
+  if(A!==1) return A===0?"No A":"Several A"; if(R<1) return "No R"; return ""; }
+function vRaci(){
+  const acts=S.raci.acts, bad=acts.filter(a=>raciCheck(a)).length;
+  return shell("raci", head("RACI","Responsibility matrix","Drafted by AI from the project and the role plan. Click a cell to change it.",
+    `<button class="btn" type="button" data-act="addact">${I.plus}Add activity</button><button class="btn" type="button" data-act="regenraci">${I.refresh}Regenerate</button>`)+`
+  <div class="stack" style="gap:16px">
+    <div class="row" style="justify-content:space-between">
+      <div class="rkey"><span><button class="cell R" tabindex="-1">R</button>Responsible: does the work</span><span><button class="cell A" tabindex="-1">A</button>Accountable: one owner</span><span><button class="cell C" tabindex="-1">C</button>Consulted</span><span><button class="cell I" tabindex="-1">I</button>Informed</span></div>
+      ${bad?`<span class="chip bad">${bad} row${bad>1?"s":""} need fixing</span>`:`<span class="chip ok">${I.check}Every activity has one A and at least one R</span>`}
+    </div>
+    <div class="tablewrap"><table class="raci">
+      <thead><tr><th class="act">Activity</th>${S.slots.map(s=>{const r=S.matching.rows.find(x=>x.slot===s.id); const m=r&&mem(r.member);
+        return `<th><div class="colhead"><span class="row" style="gap:6px;justify-content:center"><span class="swatch" style="background:${col(s.color)}"></span>${esc(s.name)}</span><small>${m?esc(m.short):"Unassigned"}</small></div></th>`;}).join("")}<th>Check</th></tr></thead>
+      <tbody>${acts.map((a,i)=>{const c=raciCheck(a);return `<tr>
+        <td class="act"><span class="muted mono small">${String(i+1).padStart(2,"0")}</span>&nbsp; ${esc(a.name)}</td>
+        ${S.slots.map(s=>{const v=a.v[s.id]||""; return `<td><button class="cell ${v}" type="button" data-cell="${a.id}|${s.id}" aria-label="${esc(a.name)}, ${esc(s.name)}: ${v||"empty"}">${v||"·"}</button></td>`;}).join("")}
+        <td>${c?`<span class="chip bad">${c}</span>`:`<span class="chip ok" aria-label="OK">${I.check}</span>`}</td></tr>`;}).join("")}</tbody>
+    </table></div>
+    <p class="small muted">Rows follow the project timeline to ${fmtDate(S.project.deadline)}. Tasks on the board can be linked to an activity.</p>
+  </div>`);
+}
+
+function vBoard(){
+  const f=S.filter;
+  const list=S.tasks.filter(t=>f==="all"||(f==="none"?!t.m:t.m===f));
+  const colv=(st,label,dotc)=>{const ts=list.filter(t=>t.st===st); const hrs=ts.reduce((a,t)=>a+t.h,0);
+    return `<section class="col" data-col="${st}" aria-label="${label}">
+      <div class="colhead"><h3><span class="dot" style="color:${dotc}"></span>${label} <span class="muted mono small">${ts.length}</span></h3><span class="hrs">${fmtH(hrs)} h</span></div>
+      ${ts.map(t=>{const m=mem(t.m), s=m&&assignedSlotOf(m.id);
+        return `<button class="card ${st==="done"?"done":""}" draggable="true" data-task="${t.id}" type="button">
+          <span class="t">${esc(t.title)}</span>
+          <span class="meta"><span class="by">${av(m)}<span>${m?esc(m.short)+(s?' · <span class="muted">'+esc(s.name)+'</span>':""):'<span class="muted">Unassigned</span>'}</span></span><span class="hrs">${fmtH(t.h)} h</span></span>
+        </button>`;}).join("")}
+      ${st==="todo"?`<button class="btn ghost sm" type="button" data-act="addtask" style="justify-content:flex-start">${I.plus}Add task</button>`:""}
+    </section>`;};
+  return shell("board", head("Board","Task board","Drag cards between columns, or click a card to edit it.",`<button class="btn primary" type="button" data-act="addtask">${I.plus}New task</button>`)+`
+  <div class="stack" style="gap:16px">
+    <div class="filters" role="group" aria-label="Filter by person">
+      <button type="button" class="all" data-filter="all" aria-pressed="${f==="all"}">Everyone</button>
+      ${S.members.map(m=>`<button type="button" data-filter="${m.id}" aria-pressed="${f===m.id}">${av(m)}${esc(m.short)}</button>`).join("")}
+      <button type="button" class="all" data-filter="none" aria-pressed="${f==="none"}">Unassigned</button>
+    </div>
+    <div class="board">${colv("todo","To do","var(--muted)")}${colv("doing","Doing","var(--accent)")}${colv("done","Done","var(--ok)")}</div>
+  </div>`);
+}
+
+function loadData(){
+  const rows=S.members.map(m=>{
+    const mine=S.tasks.filter(t=>t.m===m.id);
+    const active=mine.filter(t=>t.st!=="done").reduce((a,t)=>a+t.h,0);
+    const done=mine.filter(t=>t.st==="done").reduce((a,t)=>a+t.h,0);
+    return {m,active,done,n:mine.filter(t=>t.st!=="done").length,slot:assignedSlotOf(m.id)};
+  });
+  const total=rows.reduce((a,r)=>a+r.active,0), avg=total/rows.length;
+  rows.forEach(r=>{ r.status = avg===0?"Balanced": r.active>1.25*avg?"Overloaded": r.active<0.75*avg?"Underloaded":"Balanced"; });
+  const unassigned=S.tasks.filter(t=>!t.m&&t.st!=="done").reduce((a,t)=>a+t.h,0);
+  return {rows,total,avg,unassigned};
+}
+function statusChip(s){ return s==="Overloaded"?`<span class="chip bad"><span class="dot"></span>Overloaded</span>`:s==="Underloaded"?`<span class="chip warn"><span class="dot"></span>Underloaded</span>`:`<span class="chip ok"><span class="dot"></span>Balanced</span>`; }
+function vDash(){
+  const D=loadData(), over=D.rows.filter(r=>r.status==="Overloaded"), under=D.rows.filter(r=>r.status==="Underloaded");
+  // chart
+  const W=720,H=300,L=44,Rr=16,T=20,B=48, iw=W-L-Rr, ih=H-T-B;
+  const maxV=Math.max(...D.rows.map(r=>r.active), D.avg*1.25, 1);
+  const top=Math.ceil(maxV/10)*10; const y=v=>T+ih-(v/top)*ih;
+  const bw=iw/D.rows.length;
+  const ticks=[]; for(let v=0;v<=top;v+=top/5) ticks.push(v);
+  const fill=s=>s==="Overloaded"?"var(--bad)":s==="Underloaded"?"var(--warn)":"var(--ok)";
+  const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Active hours per member compared to the team average">
+    ${ticks.map(v=>`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="JetBrains Mono,monospace">${fmtH(v)}</text>`).join("")}
+    <rect x="${L}" y="${y(D.avg*1.25)}" width="${iw}" height="${y(D.avg*0.75)-y(D.avg*1.25)}" fill="var(--ok)" opacity=".08"/>
+    ${D.rows.map((r,i)=>{const x=L+i*bw+bw*0.22, w=bw*0.56, yy=y(r.active);
+      return `<rect x="${x}" y="${yy}" width="${w}" height="${Math.max(0,T+ih-yy)}" rx="5" fill="${fill(r.status)}"/>
+      <text x="${x+w/2}" y="${yy-7}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)" font-family="JetBrains Mono,monospace">${fmtH(r.active)} h</text>
+      <text x="${x+w/2}" y="${H-B+20}" text-anchor="middle" font-size="12.5" fill="var(--ink)" font-weight="600">${esc(r.m.short)}</text>
+      <text x="${x+w/2}" y="${H-B+36}" text-anchor="middle" font-size="11" fill="var(--muted)">${r.status}</text>`;}).join("")}
+    <line x1="${L}" x2="${W-Rr}" y1="${y(D.avg)}" y2="${y(D.avg)}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="5 4"/>
+  </svg>`;
+  const allH=S.tasks.reduce((a,t)=>a+t.h,0)||1;
+  return shell("dashboard", head("Dashboard","Workload",`Active load = hours in To do + Doing. Balanced band is 75–125% of the team average.`,`<a class="btn" href="#board">${I.board}Open board</a>`)+`
+  <div class="stack" style="gap:18px">
+    <div class="kpis">
+      <div class="panel kpi"><span class="eyebrow">Days to deadline</span><span class="v">${daysLeft()}</span><span class="small muted">${fmtDate(S.project.deadline)}</span></div>
+      <div class="panel kpi"><span class="eyebrow">Active hours</span><span class="v">${fmtH(D.total)}<small>h</small></span><span class="small muted">${S.tasks.filter(t=>t.st!=="done").length} open tasks</span></div>
+      <div class="panel kpi"><span class="eyebrow">Team average</span><span class="v">${fmtH(D.avg)}<small>h</small></span><span class="small muted">per member</span></div>
+      <div class="panel kpi"><span class="eyebrow">Not assigned</span><span class="v">${fmtH(D.unassigned)}<small>h</small></span><span class="small muted">${D.unassigned?`<a href="#board" data-filterlink="none">Assign on the board</a>`:"Everything has an owner"}</span></div>
+    </div>
+    ${over.length?`<div class="notice bad">${I.warn}<div><b>${over.map(r=>esc(r.m.short)).join(", ")} ${over.length>1?"are":"is"} overloaded.</b> ${under.length?`Move a task to ${under.map(r=>esc(r.m.short)).join(" or ")}, who ${under.length>1?"have":"has"} the most free time.`:"Consider splitting a large task."}</div></div>`:""}
+    <div class="panel pad chart stack" style="gap:8px">
+      <div class="row" style="justify-content:space-between"><h3>Active load per member</h3>
+        <div class="legend"><span><span class="swatch" style="background:var(--ok)"></span>Balanced</span><span><span class="swatch" style="background:var(--warn)"></span>Underloaded</span><span><span class="swatch" style="background:var(--bad)"></span>Overloaded</span><span><svg width="22" height="4" aria-hidden="true"><line x1="0" x2="22" y1="2" y2="2" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="5 3"/></svg>Team average <b class="mono">${fmtH(D.avg)} h</b></span></div></div>
+      <div style="overflow-x:auto"><div style="min-width:520px">${svg}</div></div>
+    </div>
+    <div class="panel" style="overflow-x:auto">
+      <table class="load">
+        <thead><tr><th>Member</th><th>Role</th><th class="n">Active</th><th class="n">Done</th><th class="n">Tasks</th><th>Share of all hours vs plan</th><th>Status</th></tr></thead>
+        <tbody>${D.rows.map(r=>{const own=S.tasks.filter(t=>t.m===r.m.id).reduce((a,t)=>a+t.h,0); const pct=Math.round(own/allH*100); const plan=r.slot?r.slot.share:0;
+          return `<tr><td><span class="row" style="gap:8px">${av(r.m)}${esc(r.m.name)}</span></td><td>${r.slot?`<span class="row" style="gap:6px"><span class="swatch" style="background:${col(r.slot.color)}"></span>${esc(r.slot.name)}</span>`:"—"}</td>
+          <td class="n">${fmtH(r.active)} h</td><td class="n">${fmtH(r.done)} h</td><td class="n">${r.n}</td>
+          <td><div class="sharebar"><div class="b"><i style="width:${Math.min(100,pct*2)}%"></i><em style="left:${Math.min(100,plan*2)}%" title="Planned ${plan}%"></em></div><span class="mono small">${pct}% / ${plan}%</span></div></td>
+          <td>${statusChip(r.status)}</td></tr>`;}).join("")}</tbody>
+      </table>
+    </div>
+    <p class="small muted">Share bar: grey fill is the member's share of all task hours, the tick is the effort share planned for their role (scale 0–50%).</p>
+  </div>`);
+}
+
+function vSettings(){
+  const p=S.project;
+  return shell("settings", head("Settings","Project settings","Only the owner can change these.")+`
+  <div class="split">
+    <form class="panel pad stack" id="setForm" novalidate>
+      <h2>Details</h2>
+      <div class="field"><label for="sTitle">Title</label><input class="input" id="sTitle" value="${esc(p.title)}"></div>
+      <div class="field"><label for="sDesc">Description</label><textarea class="textarea" id="sDesc" style="min-height:140px">${esc(p.description)}</textarea>
+        <span class="hint">Changing the description or team size asks whether to regenerate the role plan.</span></div>
+      <div class="grid2"><div class="field"><label for="sDl">Deadline</label><input class="input" id="sDl" type="date" value="${p.deadline}"></div>
+        <div class="field"><label for="sCtx">Course or context</label><input class="input" id="sCtx" value="${esc(p.context)}"></div></div>
+      <div><button class="btn primary" type="submit">Save details</button></div>
+    </form>
+    <div class="stack">
+      <div class="panel pad stack" style="gap:10px"><h3>Invite code</h3>
+        <div class="invite"><span class="code">${p.code}</span><button class="btn sm" type="button" data-copy="${p.code}">${I.copy}Copy</button></div>
+        <div><button class="btn sm" type="button" data-act="newcode">${I.refresh}Make a new code</button></div>
+        <p class="small muted">The old code stops working right away.</p></div>
+      <div class="panel pad stack" style="gap:4px"><div class="row" style="justify-content:space-between"><h3>Members</h3><span class="mono small muted">${S.members.length} / ${p.teamSize}</span></div>
+        ${S.members.map(m=>`<div class="memberrow">${av(m)}<div class="nm"><b class="small">${esc(m.name)}</b><div class="small muted">${m.owner?"Owner · ":""}${esc((assignedSlotOf(m.id)||{}).name||"No role yet")}</div></div>
+          ${m.owner?"":`<span data-rm-wrap="${m.id}"><button class="btn sm ghost" type="button" data-askrm="${m.id}">Remove</button></span>`}</div>`).join("")}
+      </div>
+    </div>
+  </div>`);
+}
+
+/* ---------- modals ---------- */
+function openLoading(title,steps,done){
+  const L=$("#layer");
+  L.innerHTML=`<div class="overlay"><div class="loading" role="status" aria-live="polite"><div class="spin"></div><h3>${title}</h3><ul class="steps">${steps.map((s,i)=>`<li data-i="${i}">${I.check}<span>${s}</span></li>`).join("")}</ul><span class="small muted">Simulated AI call</span></div></div>`;
+  steps.forEach((_,i)=>setTimeout(()=>{const li=L.querySelector(`[data-i="${i}"]`); if(li) li.classList.add("done");}, 350*(i+1)));
+  setTimeout(()=>{ L.innerHTML=""; done(); }, 350*steps.length+450);
+}
+function taskModal(t){
+  const isNew=!t; t=t||{id:"t"+Date.now(),title:"",m:null,h:2,st:"todo"};
+  const L=$("#layer");
+  L.innerHTML=`<div class="overlay" data-close="1"><form class="modal" id="taskForm" role="dialog" aria-modal="true" aria-labelledby="tmH">
+    <h2 id="tmH">${isNew?"New task":"Edit task"}</h2>
+    <div class="field"><label for="tTitle">Title</label><input class="input" id="tTitle" value="${esc(t.title)}" required></div>
+    <div class="grid2">
+      <div class="field"><label for="tWho">Assignee</label><select class="select" id="tWho"><option value="">Unassigned</option>${S.members.map(m=>`<option value="${m.id}" ${t.m===m.id?"selected":""}>${esc(m.name)}</option>`).join("")}</select></div>
+      <div class="field"><label for="tH">Estimate (hours)</label><input class="input mono" id="tH" type="number" min="0.5" max="40" step="0.5" value="${t.h}"></div>
+    </div>
+    <div class="field"><label for="tSt">Status</label><select class="select" id="tSt">${[["todo","To do"],["doing","Doing"],["done","Done"]].map(([k,l])=>`<option value="${k}" ${t.st===k?"selected":""}>${l}</option>`).join("")}</select></div>
+    <div class="field"><label for="tAct">RACI activity <span class="muted" style="font-weight:400">(optional)</span></label><select class="select" id="tAct"><option value="">None</option>${S.raci.acts.map(a=>`<option ${t.a===a.id?"selected":""} value="${a.id}">${esc(a.name)}</option>`).join("")}</select></div>
+    <p class="small" id="tErr" style="color:var(--bad)" hidden></p>
+    <div class="row" style="justify-content:space-between"><div class="row"><button class="btn primary" type="submit">${isNew?"Add task":"Save"}</button><button class="btn" type="button" data-close="1">Cancel</button></div>
+      ${isNew?"":`<button class="btn danger sm" type="button" data-deltask="${t.id}">Delete</button>`}</div>
+  </form></div>`;
+  $("#tTitle").focus();
+  $("#taskForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    const title=$("#tTitle").value.trim(), h=parseFloat($("#tH").value);
+    if(!title){ $("#tErr").textContent="Give the task a title."; $("#tErr").hidden=false; return; }
+    if(!(h>=0.5&&h<=40)){ $("#tErr").textContent="Estimate must be between 0.5 and 40 hours."; $("#tErr").hidden=false; return; }
+    const obj={...t,title,h:Math.round(h*2)/2,m:$("#tWho").value||null,st:$("#tSt").value,a:$("#tAct").value||null};
+    if(isNew) S.tasks.push(obj); else S.tasks[S.tasks.findIndex(x=>x.id===t.id)]=obj;
+    L.innerHTML=""; render(); toast(isNew?"Task added":"Task saved");
+  });
+}
+
+/* ---------- render ---------- */
+function render(){
+  const k=current(); if(k==="login") AUTH=false;
+  const map={login:vLogin,projects:vProjects,new:vNew,join:vJoin,profile:vProfile,plan:vPlan,roles:vRoles,raci:vRaci,board:vBoard,dashboard:vDash,settings:vSettings};
+  $("#app").innerHTML=map[k]();
+  bind(k);
+}
+
+/* ---------- events ---------- */
+function bind(k){
+  const app=$("#app");
+  if(k==="login"){
+    app.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{S.authTab=b.dataset.tab; render();}));
+    $("#authForm").addEventListener("submit",e=>{e.preventDefault();
+      if(S.authTab==="register" && !$("#fConsent").checked){ $("#consentErr").hidden=false; return; }
+      AUTH=true; const h=(location.hash||"").replace("#",""); if(!h||h==="login"){ location.hash="projects"; } else render(); window.scrollTo(0,0); toast(S.authTab==="register"?"Account created":"Logged in");});
+  }
+  if(k==="new"){
+    const f=S.draft;
+    $("#nDesc").addEventListener("input",e=>{f.description=e.target.value; const c=$("#nCount"); c.textContent=`${f.description.length} / 3000 · min 100`; c.classList.toggle("bad",f.description.length<100);});
+    $("#nTitle").addEventListener("input",e=>f.title=e.target.value);
+    $("#nDeadline").addEventListener("change",e=>f.deadline=e.target.value);
+    $("#nCtx").addEventListener("input",e=>f.context=e.target.value);
+    app.querySelectorAll("[data-step]").forEach(b=>b.addEventListener("click",()=>{f.size=Math.min(6,Math.max(3,f.size+Number(b.dataset.step))); render();}));
+    $("#newForm").addEventListener("submit",e=>{e.preventDefault();
+      const err=$("#newErr"); const dl=new Date(f.deadline+"T00:00:00"); const minD=new Date(TODAY); minD.setDate(minD.getDate()+7);
+      if(!f.title.trim()){err.textContent="Add a project title."; err.hidden=false; return;}
+      if(f.description.trim().length<100){err.textContent="The description needs at least 100 characters so the AI can understand the project."; err.hidden=false; return;}
+      if(!f.deadline||dl<minD){err.textContent="Set a deadline at least 7 days from today."; err.hidden=false; return;}
+      openLoading("Designing your team",["Reading the project description","Estimating work until "+fmtDate(f.deadline),`Choosing ${f.size} roles`,"Writing responsibilities and skills"],()=>{
+        S.project.planStatus="draft"; go("plan"); toast(f.size===5?"Role plan ready: review and approve it":"Prototype shows the 5-role sample plan");});
+    });
+  }
+  if(k==="join"){ app.querySelector('[data-act="join"]').addEventListener("click",()=>{go("profile"); toast("You joined StudySpace. Fill in your profile next.");}); }
+  if(k==="profile"){
+    const m=mem(S.user);
+    app.querySelectorAll("[data-count]").forEach(c=>{const ta=$("#"+c.dataset.count); ta.addEventListener("input",()=>{c.textContent=`${ta.value.length} / 1000`; c.classList.toggle("bad",ta.value.length<Number(c.dataset.min));});});
+    $("#profForm").addEventListener("submit",e=>{e.preventDefault(); const s=$("#pStr").value.trim(), w=$("#pWeak").value.trim();
+      if(s.length<30||w.length<10){ toast("Strengths need 30+ characters, weaknesses 10+"); return; }
+      m.strengths=s; m.weaknesses=w; toast("Profile saved. Your AI suggestion is marked as outdated.");});
+    app.querySelector('[data-act="askdel"]').addEventListener("click",()=>{
+      $("#dzBody").innerHTML=`<div class="stack" style="gap:8px"><p class="small"><b>This can't be undone.</b> Ownership of StudySpace passes to Daniyar.</p><div class="row"><button class="btn danger sm" type="button" id="dzYes">Yes, delete my profile</button><button class="btn sm" type="button" id="dzNo">Keep it</button></div></div>`;
+      $("#dzYes").addEventListener("click",()=>{ toast("Prototype: profile would be deleted"); render(); });
+      $("#dzNo").addEventListener("click",render);
+    });
+  }
+  if(k==="plan"){
+    app.querySelectorAll('[data-act="edit"]').forEach(b=>b.addEventListener("click",()=>{S.planEdit=true; S._backup=JSON.stringify(S.slots); render();}));
+    app.querySelectorAll('[data-act="canceledit"]').forEach(b=>b.addEventListener("click",()=>{S.planEdit=false; S.slots=JSON.parse(S._backup); render();}));
+    app.querySelectorAll('[data-act="saveplan"]').forEach(b=>b.addEventListener("click",()=>{
+      app.querySelectorAll("[data-slotfield]").forEach(el=>{ slot(el.dataset.id)[el.dataset.slotfield]=el.textContent.trim(); });
+      S.planEdit=false; render(); toast("Role plan saved");}));
+    app.querySelectorAll("[data-share]").forEach(inp=>inp.addEventListener("change",()=>{
+      app.querySelectorAll("[data-slotfield]").forEach(el=>{ slot(el.dataset.id)[el.dataset.slotfield]=el.textContent.trim(); });
+      slot(inp.dataset.share).share=Math.max(0,Math.round(Number(inp.value)||0)); render();}));
+    app.querySelectorAll('[data-act="approve"]').forEach(b=>b.addEventListener("click",()=>{S.project.planStatus="approved"; render(); toast("Plan approved. Matching is now available.");}));
+    app.querySelectorAll('[data-act="regen"]').forEach(b=>b.addEventListener("click",()=>{
+      const note=($("#regenNote")||{}).value||"";
+      openLoading("Redesigning roles",[note?"Reading your note":"Re-reading the description","Balancing effort across "+S.slots.length+" seats","Writing new rationales"],()=>{S.project.planStatus="draft"; render(); toast("New draft ready. Review it, then approve.");});
+    }));
+  }
+  if(k==="roles"){
+    app.querySelectorAll('[data-act="runmatch"]').forEach(b=>b.addEventListener("click",()=>{
+      openLoading("Matching people to roles",["Reading 5 profiles","Scoring every person for every role","Finding the best fit for the whole team","Writing explanations"],()=>{
+        const fresh=seed().matching; S.matching=fresh; render(); toast("Matching done. Review and accept.");});
+    }));
+    app.querySelectorAll('[data-act="acceptall"]').forEach(b=>b.addEventListener("click",()=>{S.matching.rows.forEach(r=>{ if(r.state!=="accepted"){r.state="accepted"; r.source=r.source==="manual"?"manual":"ai_accepted";}}); render(); toast("All roles confirmed");}));
+    app.querySelectorAll("[data-accept]").forEach(b=>b.addEventListener("click",()=>{const r=S.matching.rows.find(r=>r.slot===b.dataset.accept); r.state="accepted"; if(r.source!=="manual") r.source="ai_accepted"; render();}));
+    app.querySelectorAll("[data-reassign]").forEach(sel=>sel.addEventListener("change",()=>{
+      const r=S.matching.rows.find(r=>r.slot===sel.dataset.reassign), other=S.matching.rows.find(x=>x.member===sel.value);
+      if(other&&other!==r){ other.member=r.member; other.source="manual"; other.state="accepted"; }
+      r.member=sel.value; r.source="manual"; r.state="accepted"; render(); toast("Roles swapped and saved as manual");}));
+  }
+  if(k==="raci"){
+    const order=["","R","A","C","I"];
+    app.querySelectorAll("[data-cell]").forEach(b=>b.addEventListener("click",()=>{const [a,s]=b.dataset.cell.split("|"); const act=S.raci.acts.find(x=>x.id===a);
+      const v=act.v[s]||""; act.v[s]=order[(order.indexOf(v)+1)%order.length]; render(); const nb=$(`[data-cell="${a}|${s}"]`); if(nb) nb.focus();}));
+    app.querySelector('[data-act="addact"]').addEventListener("click",()=>{S.raci.acts.push({id:"a"+Date.now(),name:"New activity",v:{}}); render(); toast("Activity added. Set one A and at least one R.");});
+    app.querySelector('[data-act="regenraci"]').addEventListener("click",()=>openLoading("Drafting RACI",["Reading project and roles","Ordering activities to the deadline","Checking one A per activity"],()=>{S.raci=seed().raci; render(); toast("RACI draft regenerated");}));
+  }
+  if(k==="board"){
+    app.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{S.filter=b.dataset.filter; render();}));
+    app.querySelectorAll('[data-act="addtask"]').forEach(b=>b.addEventListener("click",()=>taskModal(null)));
+    app.querySelectorAll("[data-task]").forEach(c=>{
+      c.addEventListener("click",()=>taskModal(S.tasks.find(t=>t.id===c.dataset.task)));
+      c.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",c.dataset.task); c.classList.add("dragging");});
+      c.addEventListener("dragend",()=>c.classList.remove("dragging"));
+    });
+    app.querySelectorAll("[data-col]").forEach(cl=>{
+      cl.addEventListener("dragover",e=>{e.preventDefault(); cl.classList.add("over");});
+      cl.addEventListener("dragleave",()=>cl.classList.remove("over"));
+      cl.addEventListener("drop",e=>{e.preventDefault(); cl.classList.remove("over"); const id=e.dataTransfer.getData("text/plain"); const t=S.tasks.find(t=>t.id===id); if(t&&t.st!==cl.dataset.col){ t.st=cl.dataset.col; render(); toast(`Moved to ${({todo:"To do",doing:"Doing",done:"Done"})[t.st]}`);}});
+    });
+  }
+  if(k==="dashboard"){ app.querySelectorAll("[data-filterlink]").forEach(a=>a.addEventListener("click",()=>{S.filter=a.dataset.filterlink;})); }
+  if(k==="settings"){
+    $("#setForm").addEventListener("submit",e=>{e.preventDefault(); const p=S.project; const nd=$("#sDesc").value.trim(); const changed=nd!==p.description;
+      p.title=$("#sTitle").value.trim()||p.title; p.description=nd; p.deadline=$("#sDl").value||p.deadline; p.context=$("#sCtx").value.trim(); render();
+      toast(changed?"Saved. The description changed: regenerate the role plan?":"Details saved");});
+    app.querySelector('[data-act="newcode"]').addEventListener("click",()=>{const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; S.project.code=Array.from({length:6},()=>a[Math.floor(Math.random()*a.length)]).join(""); render(); toast("New code: "+S.project.code);});
+    app.querySelectorAll("[data-askrm]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.askrm, m=mem(id), w=app.querySelector(`[data-rm-wrap="${id}"]`);
+      w.innerHTML=`<span class="row" style="gap:6px"><span class="small">Remove ${esc(m.short)}?</span><button class="btn danger sm" type="button" data-rmyes>Remove</button><button class="btn sm" type="button" data-rmno>Keep</button></span>`;
+      w.querySelector("[data-rmno]").addEventListener("click",render);
+      w.querySelector("[data-rmyes]").addEventListener("click",()=>{toast(`Prototype: ${m.short} would be removed and their tasks unassigned`); render();});
+    }));
+  }
+  app.querySelectorAll("[data-logout]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault(); AUTH=false; S.authTab="login"; if(location.hash==="#login") render(); else location.hash="login";}));
+  app.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",()=>copyText(b.dataset.copy)));
+}
+$("#layer").addEventListener("click",e=>{
+  if(e.target.dataset.close){ $("#layer").innerHTML=""; }
+  const d=e.target.closest("[data-deltask]"); if(d){ S.tasks=S.tasks.filter(t=>t.id!==d.dataset.deltask); $("#layer").innerHTML=""; render(); toast("Task deleted"); }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && $("#layer").innerHTML && !$(".loading")) $("#layer").innerHTML=""; });
+
+render();
+})();
+</script>

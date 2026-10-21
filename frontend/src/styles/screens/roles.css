@@ -1,0 +1,17 @@
+/* roles */
+.ready{display:flex;flex-direction:column}
+.ready > div{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ready > div:last-child{border-bottom:0}
+.match{display:grid;grid-template-columns:minmax(170px,1fr) minmax(200px,1.2fr) minmax(0,2.4fr) auto;gap:18px;align-items:start;padding:18px 20px;border-bottom:1px solid var(--line)}
+.match:last-child{border-bottom:0}
+.match .slotname{display:flex;gap:10px;align-items:flex-start}
+.match .slotname b{display:block;font-family:var(--f-display);font-size:16px}
+.fit{display:flex;flex-direction:column;gap:6px}
+.fitbar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.fitbar i{display:block;height:100%;background:var(--accent)}
+.match > *{min-width:0}
+.who{display:flex;gap:10px;align-items:center;min-width:0}
+.who select{padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);flex:1;min-width:0;width:100%}
+.expl{font-size:14px;display:flex;flex-direction:column;gap:6px}
+.expl q{quotes:"\201C" "\201D"}
+.src{display:flex;flex-direction:column;gap:8px;align-items:flex-end}

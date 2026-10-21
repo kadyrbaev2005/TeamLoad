@@ -1,0 +1,27 @@
+/* Ported verbatim from design/design.html */
+:root{
+  --bg:#F3F4F1; --surface:#FFFFFF; --surface-2:#ECEEEA; --ink:#18202E; --muted:#5B6474; --line:#DADDD6;
+  --accent:#2F4BD8; --accent-ink:#FFFFFF; --accent-soft:#E4E8FB;
+  --ok:#1E7F4F; --ok-soft:#DDF1E5; --warn:#9A6200; --warn-soft:#FBEBC8; --bad:#B3261E; --bad-soft:#F8DCD9;
+  --r1:#2F4BD8; --r2:#0F8B7D; --r3:#C2410C; --r4:#9333EA; --r5:#A16207; --r6:#BE185D;
+  --shadow:0 1px 2px rgba(24,32,46,.06),0 4px 16px rgba(24,32,46,.06); --av-ink:#FFFFFF;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#10141C; --surface:#171C26; --surface-2:#1F2531; --ink:#E7EAF0; --muted:#9AA3B2; --line:#2C3342;
+  --accent:#8196FF; --accent-ink:#0E1330; --accent-soft:#232B52;
+  --ok:#5CC98E; --ok-soft:#173424; --warn:#F0B24A; --warn-soft:#3A2D12; --bad:#FF8A80; --bad-soft:#3E1D1B;
+  --r1:#8196FF; --r2:#3CC7B5; --r3:#FB8A5A; --r4:#C084FC; --r5:#E3B341; --r6:#F472B6;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); --av-ink:#10141C;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#10141C; --surface:#171C26; --surface-2:#1F2531; --ink:#E7EAF0; --muted:#9AA3B2; --line:#2C3342;
+  --accent:#8196FF; --accent-ink:#0E1330; --accent-soft:#232B52;
+  --ok:#5CC98E; --ok-soft:#173424; --warn:#F0B24A; --warn-soft:#3A2D12; --bad:#FF8A80; --bad-soft:#3E1D1B;
+  --r1:#8196FF; --r2:#3CC7B5; --r3:#FB8A5A; --r4:#C084FC; --r5:#E3B341; --r6:#F472B6;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); --av-ink:#10141C;
+}

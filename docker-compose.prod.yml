@@ -1,0 +1,55 @@
+# Single free-tier VM. All configuration comes from the environment (.env).
+# Put TLS in front (e.g. Caddy or a cloud load balancer) and set APP_URL=https://…
+# so session cookies are marked Secure.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-teamload}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          memory: 384m
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-teamload}?sslmode=disable
+      APP_URL: ${APP_URL:?set APP_URL}
+      APP_TZ: ${APP_TZ:-Asia/Almaty}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
+      LLM_MAX_CALLS_PER_PROJECT_PER_DAY: ${LLM_MAX_CALLS_PER_PROJECT_PER_DAY:-30}
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-80}:8080"
+
+volumes:
+  pgdata:

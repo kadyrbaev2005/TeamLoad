@@ -1,0 +1,8 @@
+/* profile */
+.tagbox{display:flex;flex-wrap:wrap;gap:6px;border:1px solid var(--line);border-radius:9px;padding:6px;background:var(--surface)}
+.tagbox input{border:0;outline:0;flex:1;min-width:120px;padding:4px 6px;background:transparent}
+.tag{display:inline-flex;align-items:center;gap:4px;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:3px 4px 3px 9px;font-size:13px;font-weight:600}
+.tag button{border:0;background:transparent;color:inherit;cursor:pointer;padding:0 4px;font-size:15px;line-height:1}
+.suggest{display:flex;gap:6px;flex-wrap:wrap}
+.suggest button{border:1px dashed var(--line);background:transparent;border-radius:6px;padding:3px 9px;font-size:13px;cursor:pointer;color:var(--muted)}
+.danger-zone{border:1px solid color-mix(in srgb,var(--bad) 40%,var(--line))}
