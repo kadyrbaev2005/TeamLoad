@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Aigerim Nurlanovna",
+    "strengths": "I organise group work, keep the team on schedule and run our weekly meetings. I like presenting our progress to the instructor.",
+    "weaknesses": "I am slow at writing code.",
+    "tags": ["Planning", "Communication"],
+    "expected_role": "Project Manager"
+  },
+  {
+    "name": "Daulet Serikov",
+    "strengths": "Go and PostgreSQL. I built a REST API with Docker during my internship and I like clean data models.",
+    "weaknesses": "CSS and visual design bore me.",
+    "tags": ["Go", "SQL", "Docker"],
+    "expected_role": "Backend Developer"
+  },
+  {
+    "name": "Kamila Abenova",
+    "strengths": "React and TypeScript. I build responsive pages and reusable components with Tailwind for my own projects.",
+    "weaknesses": "I avoid SQL and anything on the server.",
+    "tags": ["React", "TypeScript"],
+    "expected_role": "Frontend Developer"
+  },
+  {
+    "name": "Ruslan Tokhtarov",
+    "strengths": "Figma prototypes and user interviews. I ran usability tests with classmates in my HCI course and like making apps easy to use.",
+    "weaknesses": "Little coding beyond HTML.",
+    "tags": ["Figma", "User research"],
+    "expected_role": "UX/UI Designer"
+  },
+  {
+    "name": "Saule Zhaksybek",
+    "strengths": "I am careful with details and love finding bugs. I wrote Playwright tests for our club website and keep a bug list for every release.",
+    "weaknesses": "I don't like presenting in front of people.",
+    "tags": ["Testing", "Playwright"],
+    "expected_role": "QA Engineer"
+  },
+  {
+    "name": "Nurbol Yesenov",
+    "strengths": "Python, pandas and machine learning in Jupyter. I make charts and statistics from messy data sets.",
+    "weaknesses": "Not into UI work at all.",
+    "tags": ["Python", "Machine learning"],
+    "expected_role": "AI / Data Engineer"
+  },
+  {
+    "name": "Alina Kim",
+    "strengths": "Java Spring and MySQL. I designed the database schema and the REST endpoints for a hackathon booking service.",
+    "weaknesses": "I find Figma confusing.",
+    "tags": ["Java", "SQL"],
+    "expected_role": "Backend Developer"
+  },
+  {
+    "name": "Yerlan Mukhamedov",
+    "strengths": "Vue and JavaScript. I care about fast web pages, smooth CSS animations and layouts that work on phones.",
+    "weaknesses": "Databases scare me a little.",
+    "tags": ["Vue", "CSS"],
+    "expected_role": "Frontend Developer"
+  },
+  {
+    "name": "Zarina Omarova",
+    "strengths": "I coordinate deadlines, write the weekly report and keep everyone informed in Notion and Jira.",
+    "weaknesses": "Not strong at algorithms or backend code.",
+    "tags": ["Notion", "Jira"],
+    "expected_role": "Project Manager"
+  },
+  {
+    "name": "Timur Baikenov",
+    "strengths": "Statistics and data analysis in R and Python. I built a recommendation model and a few analytics dashboards.",
+    "weaknesses": "I get lost in frontend frameworks.",
+    "tags": ["Python", "Statistics"],
+    "expected_role": "AI / Data Engineer"
+  }
+]

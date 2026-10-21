@@ -17,3 +17,6 @@ table.raci{border-collapse:collapse;width:100%;min-width:760px}
 .rkey{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px}
 .rkey span{display:inline-flex;gap:8px;align-items:center}
 .rkey .cell{width:26px;height:24px;cursor:default;font-size:12px}
+/* owner: activity name opens inline rename (not in the prototype) */
+.raci .actname{display:inline;border:0;background:transparent;padding:0;font:inherit;font-weight:500;text-align:left;cursor:text;color:inherit}
+.raci .actname:hover{text-decoration:underline dashed var(--muted);text-underline-offset:3px}

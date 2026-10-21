@@ -113,10 +113,11 @@ export function useDeleteProfile() {
 
 // ---- projects ----
 
-export function useProjects() {
+export function useProjects(opts: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: keys.projects,
     queryFn: async () => (await api<{ projects: ProjectCard[] }>("GET", "/projects")).projects,
+    enabled: opts.enabled ?? true,
   });
 }
 

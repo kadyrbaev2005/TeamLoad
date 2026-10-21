@@ -1,6 +1,6 @@
 /* breakpoints (ported from design; loaded last) */
 @media (max-width:980px){
-  .shell{grid-template-columns:minmax(0,1fr)}
+  .shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}
   .side{min-width:0;border-right:0;border-bottom:1px solid var(--line);padding:12px 16px;gap:10px}
   .side .projpick,.side .me{display:none}
   .nav{flex-direction:row;overflow-x:auto;gap:4px}

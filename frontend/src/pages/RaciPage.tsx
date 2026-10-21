@@ -3,7 +3,6 @@ import { Link } from "react-router";
 import { errorMessage } from "../api/client";
 import { useGenerateRaci, usePlan, useRaci, useSaveRaci } from "../api/hooks";
 import type { ProjectBundle, Raci, RaciActivity, RaciValue, Seat } from "../api/types";
-import { Icon } from "../components/Icon";
 import { useAiOverlay } from "../components/LoadingOverlay";
 import { ConfirmModal } from "../components/Modal";
 import { useToast } from "../components/Toast";
@@ -51,7 +50,13 @@ function ActivityName({ a, i, owner, onRename, onDelete, startEditing }: {
       else setVal(a.name);
     };
     return (
-      <span className="row" style={{ gap: 8, flexWrap: "nowrap" }}>
+      <span
+        className="row"
+        style={{ gap: 6, flexWrap: "nowrap" }}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) commit();
+        }}
+      >
         {num}
         <input
           className="input"
@@ -61,7 +66,6 @@ function ActivityName({ a, i, owner, onRename, onDelete, startEditing }: {
           autoFocus
           aria-label={`Name of activity ${i + 1}`}
           onChange={(e) => setVal(e.target.value)}
-          onBlur={commit}
           onKeyDown={(e) => {
             if (e.key === "Enter") commit();
             if (e.key === "Escape") {
@@ -70,25 +74,26 @@ function ActivityName({ a, i, owner, onRename, onDelete, startEditing }: {
             }
           }}
         />
+        <button className="btn ghost sm danger" type="button" aria-label={`Delete ${a.name}`} title="Delete activity" onMouseDown={(e) => e.preventDefault()} onClick={onDelete}>
+          ×
+        </button>
       </span>
     );
   }
-  return (
-    <span className="row" style={{ gap: 4, flexWrap: "nowrap", justifyContent: "space-between" }}>
-      <span>
+  if (!owner) {
+    return (
+      <>
         {num}&nbsp; {a.name}
-      </span>
-      {owner && (
-        <span className="row" style={{ gap: 0, flexWrap: "nowrap" }}>
-          <button className="btn ghost sm" type="button" aria-label={`Rename ${a.name}`} title="Rename" onClick={() => setEditing(true)}>
-            <Icon name="pen" />
-          </button>
-          <button className="btn ghost sm" type="button" aria-label={`Delete ${a.name}`} title="Delete" onClick={onDelete}>
-            ×
-          </button>
-        </span>
-      )}
-    </span>
+      </>
+    );
+  }
+  return (
+    <>
+      {num}&nbsp;{" "}
+      <button className="actname" type="button" title="Rename or delete" aria-label={`${a.name}. Rename or delete`} onClick={() => setEditing(true)}>
+        {a.name}
+      </button>
+    </>
   );
 }
 

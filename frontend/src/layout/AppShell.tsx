@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { isStatus } from "../api/client";
-import { useLogout, useMe, useProject } from "../api/hooks";
+import { useLogout, useMe, useProject, useProjects } from "../api/hooks";
 import { Icon, type IconName } from "../components/Icon";
 import { Avatar } from "../components/ui";
 import { useToast } from "../components/Toast";
@@ -14,7 +14,10 @@ export type NavKey = "projects" | "plan" | "roles" | "raci" | "board" | "dashboa
 export function AppShell({ active, children }: { active: NavKey; children: ReactNode }) {
   const params = useParams();
   const routeProject = params.projectId;
-  const projectId = routeProject ?? rememberedProject();
+  const remembered = rememberedProject();
+  // Without a route or remembered project, show the most recent one (as the design always shows a project).
+  const projects = useProjects({ enabled: !routeProject && !remembered });
+  const projectId = routeProject ?? remembered ?? projects.data?.[0]?.id;
   const me = useMe().data;
   const bundle = useProject(projectId ?? "");
   const logout = useLogout();

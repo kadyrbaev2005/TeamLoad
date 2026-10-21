@@ -30,3 +30,11 @@ Choices not fixed by `SPEC.md` or `design.html` (decision — reason).
 - Dashboard: when no task has an estimate the chart panel shows the exact empty message plus an "Open board" button; the KPIs and member table stay visible.
 - Dashboard "Role" and the share-bar tick use the member's confirmed (accepted) role only; suggested roles show "—" and 0%.
 - Tasks and dashboard refetch every 10 s and on window focus; the project bundle (sidebar counters) refetches every 10 s too.
+- Seed data copies the design's sample texts verbatim (including the growth note that names people); it is demo data, not AI output, so the "no names in AI output" rule does not apply to it.
+- The seed's StudySpace shows "Matching pending" on My projects (two roles are only suggested, as on the design's roles screen); the design's "Roles confirmed" card contradicts its own roles screen.
+- Plan page "Not quite right?" hint says the current plan stays "until the new one is ready" (the design says "until you save the new one"); regenerating replaces the draft as soon as the AI answers, so the design's wording would be wrong.
+- Without a remembered project, the sidebar shows the user's most recent project, so it matches the design right after login.
+- A full team's join card shows "Team is full: maximum N members" up front and disables Join; the server still enforces the rule.
+- On narrow screens the shell grid uses `grid-template-rows: auto 1fr`, so the top nav does not stretch when the page content is shorter than the screen (the prototype's content was always taller).
+- Owners rename a RACI activity by clicking its name (inline input with a × delete button); the matrix otherwise looks exactly like the design.
+- Playwright e2e is not part of CI (the brief's CI list doesn't include it); run it with `make e2e` against the compose stack.

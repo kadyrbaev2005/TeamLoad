@@ -100,6 +100,7 @@ export function JoinPage() {
   }
   const p = invite.data;
   if (p.is_member) return <Navigate to={`/p/${p.project_id}/plan`} replace />;
+  const full = p.member_count >= p.team_size;
 
   const onJoin = () => {
     setJoinError("");
@@ -164,9 +165,9 @@ export function JoinPage() {
         )}
         <p className="small muted">After you join and fill in your profile, the AI suggests which role fits you best.</p>
       </div>
-      {joinError && <Notice tone="bad">{joinError}</Notice>}
+      {(joinError || full) && <Notice tone="bad">{joinError || `Team is full: maximum ${p.team_size} members`}</Notice>}
       <div className="row">
-        <button className="btn primary" type="button" onClick={onJoin} disabled={join.isPending}>
+        <button className="btn primary" type="button" onClick={onJoin} disabled={join.isPending || full}>
           Join {p.title}
         </button>
         <span className="small muted mono">Code {p.code}</span>
