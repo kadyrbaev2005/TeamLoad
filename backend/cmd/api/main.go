@@ -42,9 +42,13 @@ func run() error {
 	}
 	slog.Info("migrations applied")
 
+	server, err := api.NewServer(cfg, st)
+	if err != nil {
+		return err
+	}
 	srv := &http.Server{
 		Addr:              cfg.Addr,
-		Handler:           api.NewServer(cfg, st).Handler(),
+		Handler:           server.Handler(),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 	errc := make(chan error, 1)

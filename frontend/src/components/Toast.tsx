@@ -31,13 +31,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useToast(): ToastFn {
   return useContext(ToastContext);
 }
 
 /** Copies text and toasts the result, as the design does. */
-// eslint-disable-next-line react-refresh/only-export-components
 export function useCopy(): (text: string) => void {
   const toast = useToast();
   return useCallback(

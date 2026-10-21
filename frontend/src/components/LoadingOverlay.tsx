@@ -32,7 +32,6 @@ function Overlay({ title, steps, done }: { title: string; steps: string[]; done:
  * while the request runs (all but the last); when the response arrives every
  * step is ticked and the card closes. Errors close the card and are rethrown.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAiOverlay(): {
   run: <T>(title: string, steps: string[], fn: () => Promise<T>) => Promise<T>;
   overlay: ReactNode;

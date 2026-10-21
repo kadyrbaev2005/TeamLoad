@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "seats": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "pattern": "^S[1-6]$" },
+          "name": { "type": "string", "maxLength": 40 },
+          "summary": { "type": "string", "maxLength": 140 },
+          "responsibilities": { "type": "array", "minItems": 3, "maxItems": 5, "items": { "type": "string", "maxLength": 80 } },
+          "skills": { "type": "array", "minItems": 3, "maxItems": 5, "items": { "type": "string", "maxLength": 30 } },
+          "effort_share": { "type": "integer", "minimum": 5, "maximum": 60 },
+          "why": { "type": "string", "maxLength": 300 }
+        },
+        "required": ["id", "name", "summary", "responsibilities", "skills", "effort_share", "why"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["seats"],
+  "additionalProperties": false
+}

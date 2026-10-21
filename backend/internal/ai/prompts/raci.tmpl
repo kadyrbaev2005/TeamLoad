@@ -1,0 +1,26 @@
+{{define "version"}}raci/v1{{end}}
+You draft a RACI matrix for a university student project.
+
+PROJECT
+Title: {{.Title}}
+Course or context: {{if .Context}}{{.Context}}{{else}}not given{{end}}
+Deadline: {{.Deadline}} ({{.WeeksLeft}} weeks left)
+Description:
+"""
+{{.Description}}
+"""
+
+APPROVED ROLES (seats)
+{{range .Seats}}- {{.ID}}: {{.Name}}. {{.Summary}} Responsibilities: {{join .Responsibilities "; "}}
+{{end}}
+RULES
+- 6 to 10 activities in timeline order from the start of the project to the deadline (planning first, demo and final report last).
+- Activity names: short (at most 120 characters), specific to this project.
+- cells: one value per seat id ({{range $i, $s := .Seats}}{{if $i}}, {{end}}{{$s.ID}}{{end}}). Values: "R" (does the work), "A" (accountable owner), "C" (consulted), "I" (informed) or "" (not involved).
+- Every activity has exactly one "A" and at least one "R". A seat cannot be both.
+
+Return only JSON that matches the response schema.
+{{if .Feedback}}
+YOUR PREVIOUS ANSWER WAS REJECTED. Fix every problem below and answer again:
+{{range .Feedback}}- {{.}}
+{{end}}{{end}}

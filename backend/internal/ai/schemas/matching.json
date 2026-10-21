@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "assignments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "seat_id": { "type": "string" },
+          "person": { "type": "string" },
+          "fit": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "runner_up_seat_id": { "type": "string" },
+          "explanation": { "type": "string" }
+        },
+        "required": ["seat_id", "person", "fit", "runner_up_seat_id", "explanation"],
+        "additionalProperties": false
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "skill": { "type": "string" },
+          "seat_id": { "type": "string" },
+          "reason": { "type": "string" }
+        },
+        "required": ["skill", "seat_id", "reason"],
+        "additionalProperties": false
+      }
+    },
+    "growth_note": { "type": ["string", "null"] }
+  },
+  "required": ["assignments", "gaps", "growth_note"],
+  "additionalProperties": false
+}

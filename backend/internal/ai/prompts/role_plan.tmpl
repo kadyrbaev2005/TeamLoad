@@ -1,0 +1,40 @@
+{{define "version"}}role_plan/v1{{end}}
+You design the team roles for a university student project. A team of {{.TeamSize}} students (including the owner) will build the project below. Propose exactly {{.TeamSize}} roles, one per seat.
+
+PROJECT
+Title: {{.Title}}
+Course or context: {{if .Context}}{{.Context}}{{else}}not given{{end}}
+Deadline: {{.Deadline}} ({{.WeeksLeft}} weeks left)
+Description:
+"""
+{{.Description}}
+"""
+{{if .Note}}
+OWNER'S NOTE (apply it):
+"""
+{{.Note}}
+"""
+{{end}}
+ROLE CATALOGUE (guidance; you may combine or specialise roles for this project, e.g. "Project Manager & QA Lead" or "Data & Integration Engineer"):
+- Project Manager
+- Backend Developer
+- Frontend Developer
+- UX/UI Designer
+- QA Engineer
+- AI / Data Engineer
+
+RULES
+- Exactly {{.TeamSize}} seats with ids S1..S{{.TeamSize}} in order. Put the coordinating role (project management) in S1.
+- name: at most 40 characters.
+- summary: one sentence, at most 140 characters, saying what the person owns.
+- responsibilities: 3 to 5 items, each at most 80 characters, concrete for THIS project.
+- skills: 3 to 5 items, each at most 30 characters.
+- effort_share: an integer from 5 to 60; the shares of all seats must add up to exactly 100. Give more to the roles that carry more of the work described.
+- why: at most 300 characters, explaining why THIS project needs the role; refer to the description, the deadline or the team size.
+- Write in plain English for students. Do not invent features the description does not mention.
+
+Return only JSON that matches the response schema.
+{{if .Feedback}}
+YOUR PREVIOUS ANSWER WAS REJECTED. Fix every problem below and answer again:
+{{range .Feedback}}- {{.}}
+{{end}}{{end}}
