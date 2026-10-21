@@ -25,3 +25,8 @@ Choices not fixed by `SPEC.md` or `design.html` (decision — reason).
 - Run again is enabled only when matching is ready (approved plan, ≥3 members, all profiles); its confirm appears when any row is accepted.
 - RACI: owner renames/deletes activities with small pen / × buttons in the activity cell; delete asks for confirmation. "Start empty" next to "Draft RACI with AI" lets the owner build it by hand.
 - The mock provider keeps PM and QA separate in a 5-person team when the description has no data/AI keywords; otherwise it uses the design's PM & QA Lead + AI/Data Engineer.
+- Board cards are `div role="button"` drag sources: Enter opens the edit modal, Space picks the card up for keyboard dragging (arrows move it, Space/Enter drops, Esc cancels). A native `<button>` would fire click on Space and fight the drag.
+- The board filter lives in the URL (`?who=<userId>` / `?who=none`), so the dashboard's "Assign on the board" link opens the board filtered to Unassigned. A new task defaults to the filtered person.
+- Dashboard: when no task has an estimate the chart panel shows the exact empty message plus an "Open board" button; the KPIs and member table stay visible.
+- Dashboard "Role" and the share-bar tick use the member's confirmed (accepted) role only; suggested roles show "—" and 0%.
+- Tasks and dashboard refetch every 10 s and on window focus; the project bundle (sidebar counters) refetches every 10 s too.
