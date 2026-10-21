@@ -31,21 +31,27 @@ type person struct {
 }
 
 var people = []person{
-	{"m1", "Aruzhan Sadykova", "aruzhan.s@stu.sdu.edu.kz",
+	{"m1", "Akzhol", "akzhol@kbtu.kz",
 		"I organise group work well and keep deadlines. I like talking to the instructor and presenting. I am careful with details and usually find bugs in my friends' code.",
 		"Not strong at writing backend code.", []string{"Planning", "Communication", "Testing", "Notion"}},
-	{"m2", "Daniyar Kenzhebekov", "daniyar.k@stu.sdu.edu.kz",
+	{"m2", "Yerassyl", "yerassyl@kbtu.kz",
 		"Go and PostgreSQL. I built a REST API during my internship and I like algorithms and clean data models.",
 		"I don't enjoy CSS or visual design.", []string{"Go", "SQL", "Docker", "REST"}},
-	{"m3", "Madina Tulegenova", "madina.t@stu.sdu.edu.kz",
+	{"m3", "Beknur", "beknur@kbtu.kz",
 		"Figma and UI design. I ran user interviews for my HCI course and like making things easy to use.",
 		"Little coding beyond HTML and CSS.", []string{"Figma", "User research", "CSS"}},
-	{"m4", "Timur Akhmetov", "timur.a@stu.sdu.edu.kz",
+	{"m4", "Irisber", "irisber@kbtu.kz",
 		"React and TypeScript. I made two front-end pet projects and I care about fast, responsive pages.",
 		"I hate writing documentation.", []string{"React", "TypeScript", "Tailwind"}},
-	{"m5", "Dana Bekova", "dana.b@stu.sdu.edu.kz",
+	{"m5", "Zhanarys", "zhanarys@kbtu.kz",
 		"Python, pandas and charts from my data analysis course. I'm curious about how APIs work.",
 		"I get nervous when presenting.", []string{"Python", "SQL", "Matplotlib"}},
+}
+
+// legacyEmails are earlier demo accounts; the seed removes them too.
+var legacyEmails = []string{
+	"aruzhan.s@stu.sdu.edu.kz", "daniyar.k@stu.sdu.edu.kz", "madina.t@stu.sdu.edu.kz",
+	"timur.a@stu.sdu.edu.kz", "dana.b@stu.sdu.edu.kz",
 }
 
 const description = "A web app for SDU students to find and book free group-study rooms in the library. Students see a map of rooms with live availability, book a 1–2 hour slot and get a QR code to check in at the door. Librarians see occupancy statistics to plan opening hours. We need user accounts, a booking API that never double-books a room, a clean mobile-friendly interface and basic analytics."
@@ -96,7 +102,7 @@ var matches = []match{
 	{"s5", "m5", 81, "s2", false, "Python, pandas and charts match the occupancy statistics for librarians. You also say you are “curious about how APIs work”: this slot builds the QR check-in API, and backend is your second-best fit (63)."},
 }
 
-const growthNote = "Dana is curious about APIs. Pairing her with Daniyar on the QR check-in endpoint would give her that practice without moving her from the slot she fits best."
+const growthNote = "Zhanarys is curious about APIs. Pairing them with Yerassyl on the QR check-in endpoint would give that practice without moving them from the slot they fit best."
 
 var raci = []struct {
 	name string
@@ -192,7 +198,7 @@ func run() error {
 		return err
 	}
 	// Members join one minute apart in the design order, so ownership would
-	// pass to Daniyar if Aruzhan deleted her profile.
+	// pass to Yerassyl if Akzhol deleted their profile.
 	joined := time.Now().Add(-48 * time.Hour)
 	for i, pp := range people {
 		if _, err := tx.Exec(ctx, "INSERT INTO project_members (project_id, user_id, joined_at) VALUES ($1, $2, $3)",
@@ -294,8 +300,12 @@ func clean(ctx context.Context, q *db.Queries) error {
 	} else if !store.IsNotFound(err) {
 		return err
 	}
+	emails := append([]string{}, legacyEmails...)
 	for _, pp := range people {
-		u, err := q.GetUserByEmail(ctx, pp.email)
+		emails = append(emails, pp.email)
+	}
+	for _, email := range emails {
+		u, err := q.GetUserByEmail(ctx, email)
 		if store.IsNotFound(err) {
 			continue
 		}

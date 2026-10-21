@@ -29,11 +29,11 @@ This loads the design's demo: project **StudySpace** (deadline 11 Dec 2026, invi
 
 | Account | Password | Role |
 |---|---|---|
-| aruzhan.s@stu.sdu.edu.kz | studyspace26 | Owner |
-| daniyar.k@stu.sdu.edu.kz | studyspace26 | Member |
-| madina.t@stu.sdu.edu.kz | studyspace26 | Member |
-| timur.a@stu.sdu.edu.kz | studyspace26 | Member |
-| dana.b@stu.sdu.edu.kz | studyspace26 | Member |
+| akzhol@kbtu.kz | studyspace26 | Owner |
+| yerassyl@kbtu.kz | studyspace26 | Member |
+| beknur@kbtu.kz | studyspace26 | Member |
+| irisber@kbtu.kz | studyspace26 | Member |
+| zhanarys@kbtu.kz | studyspace26 | Member |
 
 ## Test
 
