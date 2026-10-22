@@ -148,3 +148,5 @@ frontend/
 design/design.html    clickable prototype (source of the look)
 docs/                 SPEC.md, PLAN.md, DECISIONS.md, retros/
 ```
+
+is being deleted
